@@ -13,9 +13,24 @@ namespace SAM_Backend.Utility
         public const string RoutePattern = "api/{controller}/{action}/{id?}";
         public const string ConnectionStringKey = "AppDbConnection";
         public const string PasswordAllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        public const string UsernameAllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
         public const int MaxFailedAccessAttempts = 5;
         public const int DefaultLockoutTimeSpan = 15;
         public const bool RequireConfirmedEmail = true;
 
+
+
+        public static bool IsAllowedUsername(string username)
+        {
+            char[] AllowedChars = UsernameAllowedUserNameCharacters.ToCharArray();
+            foreach (char c in username)
+            {
+                if (!AllowedChars.Contains(c)) return false;
+            }
+            return true;
+        }
+
     }
+
+    
 }
