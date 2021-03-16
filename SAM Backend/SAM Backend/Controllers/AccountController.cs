@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SAM_Backend.Models;
 using SAM_Backend.Services;
+using SAM_Backend.Utility;
 using SAM_Backend.ViewModels.Account;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,7 @@ namespace SAM_Backend.Controllers
             if (user != null) return BadRequest("There is already an account with this email address");
             user = await userManager.FindByNameAsync(model.Username);
             if (user != null) return BadRequest("Username is not available");
+            if (!Constants.IsAllowedUsername(model.Username)) return BadRequest("Username contains unallowed characters");
             #endregion
 
             #region Signup attempt
