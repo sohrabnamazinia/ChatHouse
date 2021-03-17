@@ -14,6 +14,8 @@ namespace SAM_Backend.Utility
         public const string ConnectionStringKey = "AppDbConnection";
         public const string PasswordAllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
         public const string UsernameAllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+        public const string EmailFailedToConfirmedMessage = "Failed to confirm Email!";
+        public const string UserNotFoundError = "User not found!";
         public const int MaxFailedAccessAttempts = 5;
         public const int DefaultLockoutTimeSpan = 15;
         public const bool RequireConfirmedEmail = true;
