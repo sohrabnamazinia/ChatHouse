@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,17 +19,25 @@ namespace SAM_Backend.Controllers
     [Route("api/[controller]/[action]")]
     public class AccountController : ControllerBase
     {
+        #region Fields
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly ILogger<AccountController> logger;
         private readonly IJWTService jWTService;
+        private readonly IDataProtectionProvider dataProtectionProvider;
+        private readonly IDataProtector protector;
+        #endregion
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider)
         {
+            #region Instantiation
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
             this.jWTService = jWTService;
+            this.dataProtectionProvider = dataProtectionProvider;
+            this.protector = dataProtectionProvider.CreateProtector(DataProtectionPurposeStrings.UserIdQueryString);
+            #endregion
         }
 
         [HttpPost]
@@ -55,17 +64,43 @@ namespace SAM_Backend.Controllers
 
             #region EmailConfirmation Link
             var EmailConfirmationTokoen = await userManager.GenerateEmailConfirmationTokenAsync(newUser);
-            var ConfirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { EmailConfirmationTokoen }, Request.Scheme);
+            var EncryptedId = protector.Protect(newUser.Id);
+            var ConfirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { id = EncryptedId, token = EmailConfirmationTokoen }, Request.Scheme);
             // TODO: Send email
             logger.LogInformation("EmailConfirmation Link: ${}", ConfirmationLink);
             return Ok(new AppUserViewModel(newUser));
             #endregion
         }
 
-        [HttpPost]
-        public async Task<ActionResult> ConfirmEmail()
+        [HttpGet]
+        public async Task<ActionResult> ConfirmEmail(string id, string token)
         {
-            return null;
+            #region Check inputs
+            if (id == null)
+            {
+                return NotFound(Constants.UserNotFoundError);
+            }
+            if (token == null)
+            {
+                return BadRequest("Token not Found");
+            }
+            id = protector.Unprotect(id);
+            #endregion
+
+            #region Fetch user
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound(Constants.UserNotFoundError);
+            }
+            #endregion
+
+            #region Confirm email attempt
+            var result = await userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded) return BadRequest(Constants.EmailFailedToConfirmedMessage);
+
+            return Ok("Email is confirmed Successfully");
+            #endregion
         }
 
         [HttpPost]
@@ -73,7 +108,7 @@ namespace SAM_Backend.Controllers
         {
             #region Find user
             AppUser user = model.IsEmail ? await userManager.FindByEmailAsync(model.Identifier) : await userManager.FindByNameAsync(model.Identifier);
-            if (user == null) return NotFound("User not found!");
+            if (user == null) return NotFound(Constants.UserNotFoundError);
             #endregion
 
             #region Attempt Signin
