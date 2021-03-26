@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using SAM_Backend.Models;
 using SAM_Backend.Services;
 using SAM_Backend.Utility;
@@ -25,10 +26,11 @@ namespace SAM_Backend.Controllers
         private readonly ILogger<AccountController> logger;
         private readonly IJWTService jWTService;
         private readonly IDataProtectionProvider dataProtectionProvider;
+        private readonly AppDbContext context;
         private readonly IDataProtector protector;
         #endregion
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context)
         {
             #region Instantiation
             this.userManager = userManager;
@@ -36,6 +38,7 @@ namespace SAM_Backend.Controllers
             this.logger = logger;
             this.jWTService = jWTService;
             this.dataProtectionProvider = dataProtectionProvider;
+            this.context = context;
             this.protector = dataProtectionProvider.CreateProtector(DataProtectionPurposeStrings.UserIdQueryString);
             #endregion
         }
@@ -134,6 +137,25 @@ namespace SAM_Backend.Controllers
             var token = jWTService.GenerateToken(user);
             return Ok(token);
             #endregion
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetProfile(string username)
+        {
+            #region Find user
+            var user = await userManager.FindByNameAsync(username);
+            if (user == null) return NotFound(Constants.UserNotFoundError);
+            #endregion Find user
+
+            #region Set IsMe
+            var model = new GetProfileViewModel(user);
+            AppUser requester = await jWTService.FindUserByTokenAsync(Request, context);
+            model.IsMe = (requester == user) ? true : false;
+            #endregion Set IsMe
+
+            #region Return model
+            return Ok(model);
+            #endregion Return model
         }
 
 

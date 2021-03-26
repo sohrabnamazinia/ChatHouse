@@ -1,11 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using SAM_Backend.Models;
 using SAM_Backend.Utility;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +25,7 @@ namespace SAM_Backend.Services
         {
             this.configuration = configuration;
         }
+
         public string GenerateToken(AppUser user)
         {
             var TokenSignKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>(Constants.TokenSignKey)));
@@ -43,5 +49,30 @@ namespace SAM_Backend.Services
 
             return "Bearer " + TokenHandler.WriteToken(Token);
         }
+
+        public static string FindEmailByToken(string authorization)
+        {
+            string token = string.Empty;
+            if (AuthenticationHeaderValue.TryParse(authorization, out var headerValue))
+            {
+                token = headerValue.Parameter;
+            }
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var userEmail = securityToken.Claims.First(claim => claim.Type == "nameid").Value;
+            return userEmail;
+        }
+
+        public async Task<AppUser> FindUserByTokenAsync(HttpRequest request, AppDbContext context)
+        {
+            string authorization = request.Headers[HeaderNames.Authorization];
+            if (authorization.IsNullOrEmpty())
+            {
+                return null;
+            }
+            var userEmail = FindEmailByToken(authorization);
+            return await context.Users.SingleOrDefaultAsync(x => x.Email == userEmail);
+        }
+
     }
 }
