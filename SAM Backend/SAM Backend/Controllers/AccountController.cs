@@ -140,6 +140,7 @@ namespace SAM_Backend.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> GetProfile(string username)
         {
             #region Find user

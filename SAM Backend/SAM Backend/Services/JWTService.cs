@@ -34,7 +34,8 @@ namespace SAM_Backend.Services
             var claims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
-                new Claim("UserId", user.Id)
+                new Claim("UserId", user.Id),
+                new Claim("Email", user.Email)
             };
 
             var TokenHandler = new JwtSecurityTokenHandler();
@@ -59,13 +60,21 @@ namespace SAM_Backend.Services
             }
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-            var userEmail = securityToken.Claims.First(claim => claim.Type == "nameid").Value;
+            var userEmail = securityToken.Claims.First(claim => claim.Type.Equals("Email")).Value;
             return userEmail;
         }
 
         public async Task<AppUser> FindUserByTokenAsync(HttpRequest request, AppDbContext context)
         {
-            string authorization = request.Headers[HeaderNames.Authorization];
+            string authorization;
+            try
+            {
+                authorization = request.Headers[HeaderNames.Authorization].ToString();
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                return null;
+            }
             if (authorization.IsNullOrEmpty())
             {
                 return null;
