@@ -8,6 +8,6 @@ namespace SAM_Backend.Models
 {
     public class AppUser : IdentityUser
     {
-
+        public virtual Interests Interests { get; set; }
     }
 }
