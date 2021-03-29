@@ -19,6 +19,7 @@ namespace SAM_Backend.Utility
         public const int MaxFailedAccessAttempts = 5;
         public const int DefaultLockoutTimeSpan = 15;
         public const bool RequireConfirmedEmail = true;
+        public const int InterestCategoriesCount = 14;
 
 
 

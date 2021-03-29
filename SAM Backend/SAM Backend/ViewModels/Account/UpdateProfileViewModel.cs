@@ -11,6 +11,6 @@ namespace SAM_Backend.ViewModels.Account
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Bio { get; set; }
-        // TODO : interests
+        public List<List<int>> Interests { get; set; }
     }
 }

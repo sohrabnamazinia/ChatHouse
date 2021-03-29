@@ -219,9 +219,50 @@ namespace SAM_Backend.Controllers
         [Authorize]
         public async Task<ActionResult> UpdateProfile(UpdateProfileViewModel model)
         {
+            #region find user
             var user = await jWTService.FindUserByTokenAsync(Request, context);
-            // TODO 
-            return Ok();
+            #endregion find user
+
+            #region check username
+            if (model.Username != null)
+            {
+                var isFree = IsFreeUsername(model.Username).IsCompletedSuccessfully;
+                if (!isFree) return BadRequest("Username is taken");
+                user.UserName = model.Username;
+            }
+            #endregion check username
+
+            #region Interests
+            if (model.Interests != null)
+            {
+                var updatedInterests = model.Interests;
+                if (updatedInterests.Count != Constants.InterestCategoriesCount) return BadRequest("List does not contain 14 inner lists!");
+                InterestsService.SetInterests(updatedInterests, user);
+            }
+            #endregion Interests
+
+            #region Name 
+            user.FirstName = model.FirstName != null ? model.FirstName : user.FirstName;
+            user.LastName = model.LastName != null ? model.LastName : user.LastName;
+            #endregion Name 
+
+            #region bio
+            user.Bio = model.Bio != null ? model.Bio : user.Bio;
+            #endregion bio
+
+            #region return
+            return Ok(new AppUserViewModel(user));
+            #endregion return
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> IsFreeUsername(string username)
+        {
+            #region Check Db
+            var user = await userManager.FindByNameAsync(username);
+            if (user == null) return Ok("Username is free!");
+            return BadRequest("Username is already occupied!");
+            #endregion Check Db
         }
 
         [HttpPost]
