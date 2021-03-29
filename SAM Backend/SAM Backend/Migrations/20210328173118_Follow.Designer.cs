@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAM_Backend.Models;
 
 namespace SAM_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210328173118_Follow")]
+    partial class Follow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,9 +186,6 @@ namespace SAM_Backend.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("InterestsId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -222,8 +221,6 @@ namespace SAM_Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InterestsId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -234,7 +231,6 @@ namespace SAM_Backend.Migrations
 
                     b.ToTable("AspNetUsers");
                 });
-
 
             modelBuilder.Entity("AppUserAppUser", b =>
                 {
@@ -249,60 +245,6 @@ namespace SAM_Backend.Migrations
                         .HasForeignKey("FollowingsId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
-
-            modelBuilder.Entity("SAM_Backend.Models.Interests", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Arts")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Entertainment")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Faith")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HangingOut")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Hustle")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Identity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("KnowLedge")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Languages")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Life")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Places")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sports")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Tech")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Wellness")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorldAffairs")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Interests");
-
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -354,15 +296,6 @@ namespace SAM_Backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SAM_Backend.Models.AppUser", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.Interests", "Interests")
-                        .WithMany()
-                        .HasForeignKey("InterestsId");
-
-                    b.Navigation("Interests");
                 });
 #pragma warning restore 612, 618
         }

@@ -139,6 +139,16 @@ namespace SAM_Backend.Controllers
             #endregion
         }
 
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult Logout()
+        {
+            // TODO: insert token to black list
+            return Ok();
+        }
+
+
         [HttpGet]
         [Authorize]
         public async Task<ActionResult> GetProfile(string username)
@@ -159,13 +169,69 @@ namespace SAM_Backend.Controllers
             #endregion Return model
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> Follow(string username)
+        {
+            #region Find users
+            var follower = await jWTService.FindUserByTokenAsync(Request, context);
+            var followed = await userManager.FindByNameAsync(username);
+            if (followed == null) return NotFound(Constants.UserNotFoundError);
+            if (follower == followed) return BadRequest("Users can not follow themselves!");
+            if (follower.Followings.Contains(followed)) return BadRequest("This following relationship already exists!");
+            #endregion Find users
+
+            #region Follow
+            follower.Followings.Add(followed);
+            followed.Followers.Add(follower);
+            #endregion Follow
+
+            #region Return
+            return Ok(new AppUserViewModel(follower));
+            #endregion Return
+        }
 
         [HttpPost]
         [Authorize]
-        public ActionResult Logout()
+        public async Task<ActionResult> UnFollow(string username)
         {
-            // TODO: insert token to black list
+            #region Find users
+            var unFollower = await jWTService.FindUserByTokenAsync(Request, context);
+            var unFollowed = await userManager.FindByNameAsync(username);
+            if (unFollowed == null) return NotFound(Constants.UserNotFoundError);
+            if (unFollower == unFollowed) return BadRequest("Users can not unfollow themselves!");
+            if (!unFollower.Followings.Contains(unFollowed)) return BadRequest("There is not such following relationship");
+            #endregion Find users
+
+            #region Unfollow
+            unFollower.Followings.Remove(unFollowed);
+            unFollowed.Followers.Remove(unFollower);
+            #endregion Unfollow
+
+            #region Return
+            return Ok(new AppUserViewModel(unFollower));
+            #endregion Return
+        }
+
+        #region TODO
+
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> UpdateProfile(UpdateProfileViewModel model)
+        {
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            // TODO 
             return Ok();
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> UpdateImage()
+        {
+            // TODO
+            return Ok();
+        }
+
+        #endregion TODO
     }
 }
