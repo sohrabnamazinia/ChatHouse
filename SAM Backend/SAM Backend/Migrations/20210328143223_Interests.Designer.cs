@@ -3,36 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAM_Backend.Models;
 
 namespace SAM_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210328143223_Interests")]
+    partial class Interests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("AppUserAppUser", b =>
-                {
-                    b.Property<string>("FollowersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FollowingsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("FollowersId", "FollowingsId");
-
-                    b.HasIndex("FollowingsId");
-
-                    b.ToTable("AppUserAppUser");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -235,21 +222,6 @@ namespace SAM_Backend.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-
-            modelBuilder.Entity("AppUserAppUser", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("FollowersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("FollowingsId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
             modelBuilder.Entity("SAM_Backend.Models.Interests", b =>
                 {
                     b.Property<int>("Id")
@@ -302,7 +274,6 @@ namespace SAM_Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Interests");
-
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

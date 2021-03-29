@@ -10,6 +10,6 @@ namespace SAM_Backend.Models
     {
         public List<AppUser> Followers { get; set; }
         public List<AppUser> Followings { get; set; }
-
+        public virtual Interests Interests { get; set; }
     }
 }
