@@ -250,121 +250,122 @@ namespace SAM_Backend.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-            modelBuilder.Entity("SAM_Backend.Models.Interests", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    modelBuilder.Entity("SAM_Backend.Models.Interests", b =>
+                        {
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Arts")
-                        .HasColumnType("int");
+                            b.Property<int>("Arts")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Entertainment")
-                        .HasColumnType("int");
+                            b.Property<int>("Entertainment")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Faith")
-                        .HasColumnType("int");
+                            b.Property<int>("Faith")
+                                .HasColumnType("int");
 
-                    b.Property<int>("HangingOut")
-                        .HasColumnType("int");
+                            b.Property<int>("HangingOut")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Hustle")
-                        .HasColumnType("int");
+                            b.Property<int>("Hustle")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Identity")
-                        .HasColumnType("int");
+                            b.Property<int>("Identity")
+                                .HasColumnType("int");
 
-                    b.Property<int>("KnowLedge")
-                        .HasColumnType("int");
+                            b.Property<int>("KnowLedge")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Languages")
-                        .HasColumnType("int");
+                            b.Property<int>("Languages")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Life")
-                        .HasColumnType("int");
+                            b.Property<int>("Life")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Places")
-                        .HasColumnType("int");
+                            b.Property<int>("Places")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Sports")
-                        .HasColumnType("int");
+                            b.Property<int>("Sports")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Tech")
-                        .HasColumnType("int");
+                            b.Property<int>("Tech")
+                                .HasColumnType("int");
 
-                    b.Property<int>("Wellness")
-                        .HasColumnType("int");
+                            b.Property<int>("Wellness")
+                                .HasColumnType("int");
 
-                    b.Property<int>("WorldAffairs")
-                        .HasColumnType("int");
+                            b.Property<int>("WorldAffairs")
+                                .HasColumnType("int");
 
-                    b.HasKey("Id");
+                            b.HasKey("Id");
 
-                    b.ToTable("Interests");
+                            b.ToTable("Interests");
 
-                });
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                        {
+                            b.HasOne("SAM_Backend.Models.AppUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                        {
+                            b.HasOne("SAM_Backend.Models.AppUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.HasOne("SAM_Backend.Models.AppUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                        {
+                            b.HasOne("SAM_Backend.Models.AppUser", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("SAM_Backend.Models.AppUser", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.Interests", "Interests")
-                        .WithMany()
-                        .HasForeignKey("InterestsId");
+                    modelBuilder.Entity("SAM_Backend.Models.AppUser", b =>
+                        {
+                            b.HasOne("SAM_Backend.Models.Interests", "Interests")
+                                .WithMany()
+                                .HasForeignKey("InterestsId");
 
-                    b.Navigation("Interests");
-                });
+                            b.Navigation("Interests");
+                        });
 #pragma warning restore 612, 618
-        }
-    }
+
+                });
+        } }
 }
