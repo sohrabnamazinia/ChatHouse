@@ -64,6 +64,39 @@ namespace SAM_Backend.Models
 
             return result;
         }
+
+        public static void SetInterests(List<List<int>> interests, AppUser user)
+        {
+            Wellness wellness = (Wellness) BitWiseOr(interests[0]);
+            Identity identity = (Identity) BitWiseOr(interests[1]);
+            Places places = (Places) BitWiseOr(interests[2]);
+            WorldAffairs worldAffairs = (WorldAffairs) BitWiseOr(interests[3]);
+            Tech tech = (Tech) BitWiseOr(interests[4]);
+            HangingOut hangingOut = (HangingOut) BitWiseOr(interests[5]);
+            KnowLedge knowLedge = (KnowLedge) BitWiseOr(interests[6]);
+            Hustle hustle = (Hustle) BitWiseOr(interests[7]);
+            Sports sports = (Sports) BitWiseOr(interests[8]);
+            Arts arts = (Arts) BitWiseOr(interests[9]);
+            Life life = (Life) BitWiseOr(interests[10]);
+            Languages languages = (Languages) BitWiseOr(interests[11]);
+            Entertainment entertainment = (Entertainment) BitWiseOr(interests[12]);
+            Faith faith = (Faith) BitWiseOr(interests[13]);
+
+            user.Interests.Wellness = wellness;
+            user.Interests.Identity = identity;
+            user.Interests.Places = places;
+            user.Interests.WorldAffairs = worldAffairs;
+            user.Interests.Tech = tech;
+            user.Interests.HangingOut = hangingOut;
+            user.Interests.KnowLedge = knowLedge;
+            user.Interests.Hustle = hustle;
+            user.Interests.Sports = sports;
+            user.Interests.Arts = arts;
+            user.Interests.Life = life;
+            user.Interests.Languages = languages;
+            user.Interests.Entertainment = entertainment;
+            user.Interests.Faith = faith;
+        }
     }
 
     [Flags]

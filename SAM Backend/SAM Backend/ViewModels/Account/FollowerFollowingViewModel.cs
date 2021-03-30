@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace SAM_Backend.ViewModels.Account
 {
-    public class UpdateProfileViewModel
+    public class FollowerFollowingViewModel
     {
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Bio { get; set; }
-        public List<List<int>> Interests { get; set; }
+
+        // Image
     }
 }
