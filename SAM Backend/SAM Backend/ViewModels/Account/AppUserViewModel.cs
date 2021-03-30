@@ -12,8 +12,39 @@ namespace SAM_Backend.ViewModels.Account
         {
             Email = user.Email;
             Username = user.UserName;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            Bio = user.Bio;
+            Interesets = user.Interests;
+            Followers = new List<FollowerFollowingViewModel>();
+            Followings = new List<FollowerFollowingViewModel>();
+            foreach (var f in user.Followings)
+            {
+                Followings.Add(new FollowerFollowingViewModel() 
+                {
+                    FirstName = f.FirstName,
+                    LastName = f.LastName,
+                    Username = f.UserName
+                });
+            }
+            foreach (var f in user.Followers)
+            {
+                Followers.Add(new FollowerFollowingViewModel()
+                {
+                    FirstName = f.FirstName,
+                    LastName = f.LastName,
+                    Username = f.UserName
+                });
+            }
         }
+
         public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Bio { get; set; }
+        public Interests Interesets { get; set; }
         public string Username { get; set; }
+        public List<FollowerFollowingViewModel> Followers { get; set; }
+        public List<FollowerFollowingViewModel> Followings { get; set; }
     }
 }

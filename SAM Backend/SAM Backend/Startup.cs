@@ -130,7 +130,7 @@ namespace SAM_Backend
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(Constants.DefaultLockoutTimeSpan);
             }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
             services.AddDbContextPool<AppDbContext>(
-            options => options.UseSqlServer(Configuration.GetConnectionString(Constants.ConnectionStringKey)).UseLazyLoadingProxies());
+            options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString(Constants.ConnectionStringKey)));
             #endregion Db
         }
 
