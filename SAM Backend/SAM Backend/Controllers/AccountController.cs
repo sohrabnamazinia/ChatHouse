@@ -187,6 +187,7 @@ namespace SAM_Backend.Controllers
             #endregion Follow
 
             #region Return
+            context.SaveChanges();
             return Ok(new AppUserViewModel(follower));
             #endregion Return
         }
@@ -209,11 +210,10 @@ namespace SAM_Backend.Controllers
             #endregion Unfollow
 
             #region Return
+            context.SaveChanges();
             return Ok(new AppUserViewModel(unFollower));
             #endregion Return
         }
-
-        #region TODO
 
         [HttpPost]
         [Authorize]
@@ -226,8 +226,8 @@ namespace SAM_Backend.Controllers
             #region check username
             if (model.Username != null)
             {
-                var isFree = IsFreeUsername(model.Username).IsCompletedSuccessfully;
-                if (!isFree) return BadRequest("Username is taken");
+                var isFree = IsFreeUsername(model.Username).Result.StatusCode;
+                if (isFree != Constants.OKStatuseCode) return BadRequest("Username is taken");
                 user.UserName = model.Username;
             }
             #endregion check username
@@ -251,12 +251,15 @@ namespace SAM_Backend.Controllers
             #endregion bio
 
             #region return
+            await userManager.UpdateAsync(user);
             return Ok(new AppUserViewModel(user));
             #endregion return
         }
 
+        #region TODO After Deploy
+
         [HttpGet]
-        public async Task<ActionResult> IsFreeUsername(string username)
+        public async Task<ObjectResult> IsFreeUsername(string username)
         {
             #region Check Db
             var user = await userManager.FindByNameAsync(username);
