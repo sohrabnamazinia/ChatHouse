@@ -41,7 +41,6 @@ namespace SAM_Backend.Models
         public Entertainment Entertainment { get; set; }
 
         public Faith Faith { get; set; }
-
     }
 
     public class InterestsService
@@ -96,6 +95,30 @@ namespace SAM_Backend.Models
             user.Interests.Languages = languages;
             user.Interests.Entertainment = entertainment;
             user.Interests.Faith = faith;
+        }
+
+        public static bool HasInterestCategory(int category, AppUser user)
+        {
+            switch (category)
+            {
+                case 0: return user.Interests.Wellness > 0;
+                case 1: return user.Interests.Identity > 0;
+                case 2: return user.Interests.Places > 0;
+                case 3: return user.Interests.WorldAffairs > 0;
+                case 4: return user.Interests.Tech > 0;
+                case 5: return user.Interests.HangingOut > 0;
+                case 6: return user.Interests.KnowLedge > 0;
+                case 7: return user.Interests.Hustle > 0;
+                case 8: return user.Interests.Sports > 0;
+                case 9: return user.Interests.Arts > 0;
+                case 10: return user.Interests.Life > 0;
+                case 11: return user.Interests.Languages > 0;
+                case 12: return user.Interests.Entertainment > 0;
+                case 13: return user.Interests.Faith > 0;
+                
+                default:
+                    return false;
+            }
         }
     }
 
