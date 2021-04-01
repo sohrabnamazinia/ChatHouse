@@ -228,6 +228,7 @@ namespace SAM_Backend.Controllers
             {
                 var isFree = IsFreeUsername(model.Username).Result.StatusCode;
                 if (isFree != Constants.OKStatuseCode) return BadRequest("Username is taken");
+                if (!Constants.IsAllowedUsername(model.Username)) return BadRequest("Username contains not allowed characters");
                 user.UserName = model.Username;
             }
             #endregion check username
