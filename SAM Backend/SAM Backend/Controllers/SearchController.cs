@@ -67,8 +67,14 @@ namespace SAM_Backend.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> Category(int category, [FromQuery] PaginationParameters pagination)
+        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> Category(string name, int? category, [FromQuery] PaginationParameters pagination)
         {
+            #region check input
+
+            if (category < 0 || category > 13)
+                return BadRequest("category is not supported");
+
+            #endregion
 
             #region create users Query
 
@@ -118,14 +124,19 @@ namespace SAM_Backend.Controllers
                     usersQuery = context.Users.Where(user => user.Interests.Faith > 0);
                     break;
 
-                default:
-                    return BadRequest("Bad category input");
+                default: 
+                    usersQuery = context.Users;
+                    break;
             }
             #endregion
 
             #region Find users
-            List<AppUser> users = await usersQuery.OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
-
+            List<AppUser> users = await usersQuery
+                .Where(user => 
+                    name == null || ((user.FirstName != null && user.FirstName.Contains(name))) || 
+                    (user.LastName != null && user.LastName.Contains(name)) || 
+                    user.UserName.Contains(name))
+                .OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
 
             #endregion
 
@@ -140,9 +151,23 @@ namespace SAM_Backend.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> Item(int category, int item, [FromQuery] PaginationParameters pagination)
+        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> Item(string name, int? category, int item, [FromQuery] PaginationParameters pagination)
         {
 
+            #region check input
+
+            if (category == null)
+                return BadRequest("category can't be null");
+
+            if (category < 0 || category > 13)
+                return BadRequest("category must be between 0 to 13");
+
+            if (item <= 0)
+                return BadRequest("item must be positive");
+                   
+
+            #endregion
+            
             #region create users Query
             IQueryable<AppUser> usersQuery;
             switch (category)
@@ -191,12 +216,18 @@ namespace SAM_Backend.Controllers
                     break;
 
                 default:
-                    return BadRequest("Bad category input");
+                    usersQuery = context.Users;
+                    break;
             }
             #endregion
 
             #region Find users
-            List<AppUser> users = await usersQuery.OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
+            List<AppUser> users = await usersQuery
+                .Where(user =>
+                    name == null || ((user.FirstName != null && user.FirstName.Contains(name))) ||
+                    (user.LastName != null && user.LastName.Contains(name)) ||
+                    user.UserName.Contains(name))
+                .OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
             #endregion
 
             #region convert to viewModel
