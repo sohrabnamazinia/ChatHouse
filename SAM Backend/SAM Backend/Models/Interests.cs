@@ -334,6 +334,6 @@ namespace SAM_Backend.Models
         Atheism = (2 << 5),
         Sikhism = (2 << 6),
         Judaism = (2 << 7),
-        Angosticism = (2 << 8)
+        Agnosticism = (2 << 8)
     }
 }

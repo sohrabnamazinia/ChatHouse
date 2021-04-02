@@ -8,7 +8,7 @@ namespace SAM_Backend.Utility
     public class PaginationParameters
     {
         const int MaxPageSize = 20;
-        public int PageNumber { get; set; } = 1;
+        private int _PageNumber { get; set; } = 1;
         private int _PageSize { get; set; } = 10;
         public int PageSize
         {
@@ -19,6 +19,17 @@ namespace SAM_Backend.Utility
             set
             {
                 _PageSize = (value <= MaxPageSize) ? value : MaxPageSize;
+            }
+        }
+        public int PageNumber
+        {
+            get
+            {
+                return _PageNumber;
+            }
+            set
+            {
+                _PageNumber = (value >= 1) ? value : 1;
             }
         }
     }
