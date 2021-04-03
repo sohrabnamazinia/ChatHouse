@@ -270,7 +270,7 @@ namespace SAM_Backend.Controllers
 
             #region minio
             var files = Request.Form.Files;
-            MinIOResponseModel minioResponse = minIOService.UpdateUserImage(files, user);
+            MinIOResponseModel minioResponse = await minIOService.UpdateUserImage(files, user);
             if (!minioResponse.Done) return BadRequest(minioResponse.Message);
             #endregion minio
 
