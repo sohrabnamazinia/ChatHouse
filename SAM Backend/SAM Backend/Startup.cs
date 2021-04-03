@@ -65,6 +65,7 @@ namespace SAM_Backend
             });
             });
             services.AddScoped<IJWTService, JWTService>();
+            services.AddScoped<IMinIOService, MinIOService>();
             #endregion default
             #region CORS
             services.AddCors(o => o.AddPolicy(Constants.CORSPolicyName, builder =>
