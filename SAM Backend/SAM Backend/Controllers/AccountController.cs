@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -165,9 +166,12 @@ namespace SAM_Backend.Controllers
             var model = new GetProfileViewModel(user);
             AppUser requester = await jWTService.FindUserByTokenAsync(Request, context);
             model.IsMe = (requester == user) ? true : false;
+            user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
+            model.ImageLink = user.ImageLink;
             #endregion Set IsMe
 
             #region Return model
+            context.SaveChanges();
             return Ok(model);
             #endregion Return model
         }
@@ -262,7 +266,8 @@ namespace SAM_Backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> UpdateImage()
+        [FileUploadOperation.FileContentType]
+        public async Task<ActionResult> UpdateImage(IFormFile fileUpload)
         {
             #region find user
             var user = await jWTService.FindUserByTokenAsync(Request, context);
@@ -276,7 +281,7 @@ namespace SAM_Backend.Controllers
 
             #region return
             context.SaveChanges();
-            return Ok(new AppUserViewModel(user));
+            return Ok(new UpdateImageViewModel(user));
             #endregion return
         }
 

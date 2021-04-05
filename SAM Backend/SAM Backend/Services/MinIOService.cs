@@ -37,7 +37,7 @@ namespace SAM_Backend.Services
                 return response;
             }
 
-            if (fileCollection.Count != 0)
+            if (fileCollection.Count != 1)
             {
                 response.Message = "there must be exactly one input file!";
                 return response;
@@ -79,7 +79,7 @@ namespace SAM_Backend.Services
             #endregion remove previous image
 
             #region upload
-            var ImageName = FileService.CreateObjectName(user.Id, imageFile.FileName);
+            var ImageName = FileService.CreateObjectName(imageFile.FileName, user.Id);
             await minio.PutObjectAsync(Constants.MinIOBucketUsers, ImageName, imageFile.OpenReadStream(), imageFile.Length);
             var link = await GenerateUrl(user.Id, ImageName);
             if (link == null)
@@ -88,6 +88,7 @@ namespace SAM_Backend.Services
                 return response;
             }
             user.ImageLink = link;
+            user.ImageName = ImageName;
             #endregion upload
 
             #region return 
