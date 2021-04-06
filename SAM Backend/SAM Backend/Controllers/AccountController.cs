@@ -234,7 +234,7 @@ namespace SAM_Backend.Controllers
             if (model.Username != null)
             {
                 var isFree = IsFreeUsername(model.Username).Result.StatusCode;
-                if (isFree != Constants.OKStatuseCode) return BadRequest("Username is taken");
+                if ((isFree != Constants.OKStatuseCode) && !(model.Username.Equals(user.UserName))) return BadRequest("Username is taken");
                 if (!model.Username.IsAllowedUsername()) return BadRequest("Username contains not allowed characters");
                 user.UserName = model.Username;
             }
