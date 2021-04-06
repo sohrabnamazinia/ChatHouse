@@ -11,5 +11,15 @@ namespace SAM_Backend.Utility
         {
             return s == null || s.Length == 0;
         }
+
+        public static bool IsAllowedUsername(this string username)
+        {
+            char[] AllowedChars = Constants.UsernameAllowedUserNameCharacters.ToCharArray();
+            foreach (char c in username)
+            {
+                if (!AllowedChars.Contains(c)) return false;
+            }
+            return true;
+        }
     }
 }

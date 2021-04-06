@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -27,10 +28,11 @@ namespace SAM_Backend.Controllers
         private readonly IJWTService jWTService;
         private readonly IDataProtectionProvider dataProtectionProvider;
         private readonly AppDbContext context;
+        private readonly IMinIOService minIOService;
         private readonly IDataProtector protector;
         #endregion
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context, IMinIOService minIOService)
         {
             #region Instantiation
             this.userManager = userManager;
@@ -39,7 +41,9 @@ namespace SAM_Backend.Controllers
             this.jWTService = jWTService;
             this.dataProtectionProvider = dataProtectionProvider;
             this.context = context;
+            this.minIOService = minIOService;
             this.protector = dataProtectionProvider.CreateProtector(DataProtectionPurposeStrings.UserIdQueryString);
+            this.minIOService = minIOService;
             #endregion
         }
 
@@ -51,7 +55,7 @@ namespace SAM_Backend.Controllers
             if (user != null) return BadRequest("There is already an account with this email address");
             user = await userManager.FindByNameAsync(model.Username);
             if (user != null) return BadRequest("Username is not available");
-            if (!Constants.IsAllowedUsername(model.Username)) return BadRequest("Username contains unallowed characters");
+            if (!model.Username.IsAllowedUsername()) return BadRequest("Username contains unallowed characters");
             #endregion
 
             #region Signup attempt
@@ -162,9 +166,12 @@ namespace SAM_Backend.Controllers
             var model = new GetProfileViewModel(user);
             AppUser requester = await jWTService.FindUserByTokenAsync(Request, context);
             model.IsMe = (requester == user) ? true : false;
+            user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
+            model.ImageLink = user.ImageLink;
             #endregion Set IsMe
 
             #region Return model
+            context.SaveChanges();
             return Ok(model);
             #endregion Return model
         }
@@ -227,8 +234,8 @@ namespace SAM_Backend.Controllers
             if (model.Username != null)
             {
                 var isFree = IsFreeUsername(model.Username).Result.StatusCode;
-                if (isFree != Constants.OKStatuseCode) return BadRequest("Username is taken");
-                if (!Constants.IsAllowedUsername(model.Username)) return BadRequest("Username contains not allowed characters");
+                if ((isFree != Constants.OKStatuseCode) && !(model.Username.Equals(user.UserName))) return BadRequest("Username is taken");
+                if (!model.Username.IsAllowedUsername()) return BadRequest("Username contains not allowed characters");
                 user.UserName = model.Username;
             }
             #endregion check username
@@ -257,6 +264,27 @@ namespace SAM_Backend.Controllers
             #endregion return
         }
 
+        [HttpPost]
+        [Authorize]
+        [FileUploadOperation.FileContentType]
+        public async Task<ActionResult> UpdateImage(IFormFile fileUpload)
+        {
+            #region find user
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            #endregion find user
+
+            #region minio
+            var files = Request.Form.Files;
+            MinIOResponseModel minioResponse = await minIOService.UpdateUserImage(files, user);
+            if (!minioResponse.Done) return BadRequest(minioResponse.Message);
+            #endregion minio
+
+            #region return
+            context.SaveChanges();
+            return Ok(new UpdateImageViewModel(user));
+            #endregion return
+        }
+
         #region TODO After Deploy
 
         [HttpGet]
@@ -267,14 +295,6 @@ namespace SAM_Backend.Controllers
             if (user == null) return Ok("Username is free!");
             return BadRequest("Username is already occupied!");
             #endregion Check Db
-        }
-
-        [HttpPost]
-        [Authorize]
-        public async Task<ActionResult> UpdateImage()
-        {
-            // TODO
-            return Ok();
         }
 
         #endregion TODO

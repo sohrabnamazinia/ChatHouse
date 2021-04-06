@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace SAM_Backend.ViewModels.Account
 {
-    public class GetProfileViewModel : AppUserViewModel
+    public class UpdateImageViewModel : AppUserViewModel
     {
-        public GetProfileViewModel(AppUser user) : base(user)
+        public UpdateImageViewModel(AppUser user) : base(user)
         {
-                
+            ImageLink = user.ImageLink;
         }
-        public bool IsMe { get; set; }
         public string ImageLink { get; set; }
-
     }
 }
