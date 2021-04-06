@@ -15,7 +15,7 @@ namespace SAM_Backend.ViewModels.Account
             FirstName = user.FirstName;
             LastName = user.LastName;
             Bio = user.Bio;
-            Interesets = user.Interests;
+            Interests = InterestsService.ConvertInterestsToLists(user.Interests);
             Followers = new List<FollowerFollowingViewModel>();
             Followings = new List<FollowerFollowingViewModel>();
             foreach (var f in user.Followings)
@@ -42,7 +42,7 @@ namespace SAM_Backend.ViewModels.Account
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Bio { get; set; }
-        public Interests Interesets { get; set; }
+        public List<List<int>> Interests { get; set; }
         public string Username { get; set; }
         public List<FollowerFollowingViewModel> Followers { get; set; }
         public List<FollowerFollowingViewModel> Followings { get; set; }

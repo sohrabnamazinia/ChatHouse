@@ -45,7 +45,7 @@ namespace SAM_Backend.Models
 
     public class InterestsService
     {
-        public static List<int> ConvertInterestsToList<T>(T interests) where T : System.Enum
+        public static List<int> ConvertInterestToList<T>(T interests) where T : System.Enum
         {
             List<int> result = new List<int>();
             foreach (T interest in Enum.GetValues(typeof(T)))
@@ -66,20 +66,20 @@ namespace SAM_Backend.Models
 
         public static void SetInterests(List<List<int>> interests, AppUser user)
         {
-            Wellness wellness = (Wellness) BitWiseOr(interests[0]);
-            Identity identity = (Identity) BitWiseOr(interests[1]);
-            Places places = (Places) BitWiseOr(interests[2]);
-            WorldAffairs worldAffairs = (WorldAffairs) BitWiseOr(interests[3]);
-            Tech tech = (Tech) BitWiseOr(interests[4]);
-            HangingOut hangingOut = (HangingOut) BitWiseOr(interests[5]);
-            KnowLedge knowLedge = (KnowLedge) BitWiseOr(interests[6]);
-            Hustle hustle = (Hustle) BitWiseOr(interests[7]);
-            Sports sports = (Sports) BitWiseOr(interests[8]);
-            Arts arts = (Arts) BitWiseOr(interests[9]);
-            Life life = (Life) BitWiseOr(interests[10]);
-            Languages languages = (Languages) BitWiseOr(interests[11]);
-            Entertainment entertainment = (Entertainment) BitWiseOr(interests[12]);
-            Faith faith = (Faith) BitWiseOr(interests[13]);
+            Wellness wellness = (Wellness)BitWiseOr(interests[0]);
+            Identity identity = (Identity)BitWiseOr(interests[1]);
+            Places places = (Places)BitWiseOr(interests[2]);
+            WorldAffairs worldAffairs = (WorldAffairs)BitWiseOr(interests[3]);
+            Tech tech = (Tech)BitWiseOr(interests[4]);
+            HangingOut hangingOut = (HangingOut)BitWiseOr(interests[5]);
+            KnowLedge knowLedge = (KnowLedge)BitWiseOr(interests[6]);
+            Hustle hustle = (Hustle)BitWiseOr(interests[7]);
+            Sports sports = (Sports)BitWiseOr(interests[8]);
+            Arts arts = (Arts)BitWiseOr(interests[9]);
+            Life life = (Life)BitWiseOr(interests[10]);
+            Languages languages = (Languages)BitWiseOr(interests[11]);
+            Entertainment entertainment = (Entertainment)BitWiseOr(interests[12]);
+            Faith faith = (Faith)BitWiseOr(interests[13]);
 
             user.Interests.Wellness = wellness;
             user.Interests.Identity = identity;
@@ -97,28 +97,27 @@ namespace SAM_Backend.Models
             user.Interests.Faith = faith;
         }
 
-        public static bool HasInterestCategory(int category, AppUser user)
+        public static List<List<int>> ConvertInterestsToLists(Interests interest)
         {
-            switch (category)
-            {
-                case 0: return user.Interests.Wellness > 0;
-                case 1: return user.Interests.Identity > 0;
-                case 2: return user.Interests.Places > 0;
-                case 3: return user.Interests.WorldAffairs > 0;
-                case 4: return user.Interests.Tech > 0;
-                case 5: return user.Interests.HangingOut > 0;
-                case 6: return user.Interests.KnowLedge > 0;
-                case 7: return user.Interests.Hustle > 0;
-                case 8: return user.Interests.Sports > 0;
-                case 9: return user.Interests.Arts > 0;
-                case 10: return user.Interests.Life > 0;
-                case 11: return user.Interests.Languages > 0;
-                case 12: return user.Interests.Entertainment > 0;
-                case 13: return user.Interests.Faith > 0;
-                
-                default:
-                    return false;
-            }
+            var result = new List<List<int>>();
+            
+            result.Add(ConvertInterestToList(interest.Wellness));
+            result.Add(ConvertInterestToList(interest.Identity));
+            result.Add(ConvertInterestToList(interest.Places));
+            result.Add(ConvertInterestToList(interest.WorldAffairs));
+            result.Add(ConvertInterestToList(interest.Tech));
+            result.Add(ConvertInterestToList(interest.HangingOut));
+            result.Add(ConvertInterestToList(interest.KnowLedge));
+            result.Add(ConvertInterestToList(interest.Hustle));
+            result.Add(ConvertInterestToList(interest.Sports));
+            result.Add(ConvertInterestToList(interest.Arts));
+            result.Add(ConvertInterestToList(interest.Life));
+            result.Add(ConvertInterestToList(interest.Languages));
+            result.Add(ConvertInterestToList(interest.Entertainment));
+            result.Add(ConvertInterestToList(interest.Faith));
+
+            return result;
+
         }
     }
 
