@@ -29,11 +29,12 @@ namespace SAM_Backend.Controllers
         private readonly IJWTService jWTService;
         private readonly IDataProtectionProvider dataProtectionProvider;
         private readonly AppDbContext context;
+        private readonly IMinIOService minIOService;
         private readonly IDataProtector protector;
 
         #endregion
 
-        public SearchController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<SearchController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context)
+        public SearchController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<SearchController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context, IMinIOService minIOService)
         {
             #region Instantiation
 
@@ -43,6 +44,7 @@ namespace SAM_Backend.Controllers
             this.jWTService = jWTService;
             this.dataProtectionProvider = dataProtectionProvider;
             this.context = context;
+            this.minIOService = minIOService;
             this.protector = dataProtectionProvider.CreateProtector(DataProtectionPurposeStrings.UserIdQueryString);
 
             #endregion
@@ -54,6 +56,11 @@ namespace SAM_Backend.Controllers
         {
             #region Find users
             List<AppUser> suggestedUsers = await context.Users.OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
+            #endregion
+
+            #region update image links
+            foreach (var user in suggestedUsers)
+                user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
             #endregion
 
             #region convert to viewModel
@@ -138,6 +145,11 @@ namespace SAM_Backend.Controllers
                     user.UserName.Contains(name))
                 .OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
 
+            #endregion
+
+            #region update image links
+            foreach (var user in users)
+                user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
             #endregion
 
             #region convert to viewModel
@@ -228,6 +240,11 @@ namespace SAM_Backend.Controllers
                     (user.LastName != null && user.LastName.Contains(name)) ||
                     user.UserName.Contains(name))
                 .OrderByDescending(x => x.Followers.Count).Skip((pagination.PageNumber - 1) * (pagination.PageSize)).Take(pagination.PageSize).ToListAsync();
+            #endregion
+
+            #region update image links
+            foreach (var user in users)
+                user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
             #endregion
 
             #region convert to viewModel
