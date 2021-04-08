@@ -11,11 +11,14 @@ namespace SAM_Backend.ViewModels.Search
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string ImageLink { get; set; }
+
         public AppUserSearchViewModel(AppUser user)
         {
             this.Username = user.UserName;
             this.FirstName = user.FirstName;
             this.LastName = user.LastName;
+            this.ImageLink = user.ImageLink;
         }
 
         // Image
