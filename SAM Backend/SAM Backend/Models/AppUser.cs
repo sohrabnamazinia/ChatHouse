@@ -16,5 +16,7 @@ namespace SAM_Backend.Models
         public virtual ICollection<AppUser> Followers { get; set; }
         public virtual ICollection<AppUser> Followings { get; set; }
         public virtual Interests Interests { get; set; }
+        public virtual ICollection<Room> InRooms { get; set; }
+        public virtual ICollection<Room> CreatedRooms { get; set; }
     }
 }
