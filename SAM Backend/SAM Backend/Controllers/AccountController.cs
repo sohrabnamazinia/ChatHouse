@@ -245,7 +245,7 @@ namespace SAM_Backend.Controllers
             {
                 var updatedInterests = model.Interests;
                 if (updatedInterests.Count != Constants.InterestCategoriesCount) return BadRequest("List does not contain 14 inner lists!");
-                InterestsService.SetInterests(updatedInterests, user);
+                InterestsService.SetInterestsForUser(updatedInterests, user);
             }
             #endregion Interests
 

@@ -13,6 +13,7 @@ namespace SAM_Backend.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public virtual AppUser Creator { get; set; }
         public virtual DateTime StartDate { get; set; }
         public virtual DateTime EndDate { get; set; }

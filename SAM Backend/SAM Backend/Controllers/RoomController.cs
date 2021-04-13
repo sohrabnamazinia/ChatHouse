@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SAM_Backend.Models;
 using SAM_Backend.Services;
+using SAM_Backend.Utility;
 using SAM_Backend.ViewModels.Room;
 using System;
 using System.Collections.Generic;
@@ -31,19 +32,34 @@ namespace SAM_Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateRoomViewModel model)
+        public async Task<IActionResult> CreateRoom(CreateRoomViewModel model)
         {
+            #region find user
             var user = await jWTService.FindUserByTokenAsync(Request, context);
+            #endregion find user
+
+            #region room 
             var room = new Room()
             {
                 Creator = user,
-                StartDate = DateTime.Now,
-                Name = model.Name
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                Name = model.Name,
+                Description = model.Description
             };
+            #endregion room
 
+            #region Interests
+            var updatedInterests = model.Interests;
+            if (InterestsService.IsValidRoomInterest(updatedInterests)) InterestsService.SetInterestsForRoom(updatedInterests, room);
+            else return BadRequest("Interest list is not in valid format for Room!");
+            #endregion Interests
+
+            #region return
             context.Rooms.Add(room);
             context.SaveChanges();
             return null;
+            #endregion return
         }
     }
 }
