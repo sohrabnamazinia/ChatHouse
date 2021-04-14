@@ -12,10 +12,8 @@ namespace SAM_Backend.ViewModels.Room
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        [Required]
-        public DateTime StartDate { get; set; }
-        [Required]
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         [Required]
         public List<List<int>> Interests { get; set;  }
 

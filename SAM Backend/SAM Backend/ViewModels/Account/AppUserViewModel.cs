@@ -1,4 +1,5 @@
 ﻿using SAM_Backend.Models;
+using SAM_Backend.ViewModels.Room;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,8 @@ namespace SAM_Backend.ViewModels.Account
                     Username = f.UserName
                 });
             }
+            CreatedRooms = user.CreatedRooms.Select(x => new RoomViewModel(x)).ToList();
+            InRooms = user.InRooms.Select(x => new RoomViewModel(x)).ToList();
         }
 
         public string Email { get; set; }
@@ -46,5 +49,7 @@ namespace SAM_Backend.ViewModels.Account
         public string Username { get; set; }
         public List<FollowerFollowingViewModel> Followers { get; set; }
         public List<FollowerFollowingViewModel> Followings { get; set; }
+        public List<RoomViewModel> InRooms { get; set; }
+        public List<RoomViewModel> CreatedRooms { get; set; }
     }
 }
