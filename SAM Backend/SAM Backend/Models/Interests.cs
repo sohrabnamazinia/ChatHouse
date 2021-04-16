@@ -139,9 +139,7 @@ namespace SAM_Backend.Models
             {
                 foreach (var num in innerList)
                 {
-                    if (num == 1) isOne++;
-                    else if (num == 0) continue;
-                    else return false;
+                    isOne++;
                 }
             }
             if (isOne != 1) return false;

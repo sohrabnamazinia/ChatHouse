@@ -10,6 +10,7 @@ namespace SAM_Backend.ViewModels.Room
     {
         public RoomViewModel(Models.Room room)
         {
+            Id = room.Id;
             Creator = room.Creator.UserName;
             Members = room.Members.Select(x => x.UserName).ToList();
             StartDate = room.StartDate;
@@ -18,7 +19,7 @@ namespace SAM_Backend.ViewModels.Room
             Name = room.Name;
             Description = room.Description;
         }
-
+        public int Id { get; set; }
         public string Creator { get; set; }
         public List<string> Members { get; set; }
         public DateTime StartDate { get; set; }
