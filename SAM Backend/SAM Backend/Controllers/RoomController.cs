@@ -45,7 +45,7 @@ namespace SAM_Backend.Controllers
             if (DateTime.Compare(startDate, endDate) >= 0) return BadRequest("End date must be after start date!");
             if (DateTime.Compare(DateTime.Now, endDate) >= 0) return BadRequest("Room date has been expired!");
             var updatedInterests = model.Interests;
-            if (!(InterestsService.IsValidRoomInterest(updatedInterests))) return BadRequest("Interests list is not in a valid format for a Room");
+            if (!(InterestsService.IsValidRoomInterest(updatedInterests))) return BadRequest(Constants.InterestsRoomFormatError);
             #endregion
 
             #region room 
@@ -146,6 +146,66 @@ namespace SAM_Backend.Controllers
             #region return 
             context.SaveChanges();
             return Ok(new AppUserViewModel(user));
+            #endregion
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> UpdateRoom(UpdateRoomViewModel model)
+        {
+            #region find user and room
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            var room = context.Rooms.Find(model.RoomId);
+            if (room == null) return NotFound(Constants.RoomNotFound);
+            if (user != room.Creator) return StatusCode(StatusCodes.Status403Forbidden, "Only creator can update the room!");
+            #endregion
+
+            #region name and description
+            room.Name = model.Name != null ? model.Name : room.Name;
+            room.Description = model.Description != null ? model.Description : room.Description;
+            #endregion
+
+            #region Date
+            if (model.EndDate != null)
+            {
+                if (DateTime.Compare(DateTime.Now, model.EndDate.Value) >= 0) return BadRequest("room end date has been passed!");
+                if (model.StartDate != null)
+                {
+                    if (DateTime.Compare(model.StartDate.Value, model.EndDate.Value) >= 0) return BadRequest("End date must be after start date!");
+                    room.StartDate = model.StartDate.Value;
+                }
+                room.EndDate = model.EndDate.Value;
+            }
+            #endregion
+
+            #region Interests
+            if (model.Interests != null)
+            {
+                if (!InterestsService.IsValidRoomInterest(model.Interests)) return BadRequest(Constants.InterestsRoomFormatError);
+                InterestsService.SetInterestsForRoom(model.Interests, room);
+            }
+            #endregion
+
+            #region Db & return 
+            context.Rooms.Update(room);
+            context.SaveChanges();
+            return Ok(new RoomViewModel(room));
+            #endregion
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRoom(int roomId)
+        {
+            #region find user and room
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            var room = context.Rooms.Find(roomId);
+            if (room == null) return NotFound(Constants.RoomNotFound);
+            if (room.Creator != user) return StatusCode(StatusCodes.Status403Forbidden, "Only creator can delete a room");
+            #endregion
+
+            #region delete and return
+            context.Rooms.Remove(room);
+            context.SaveChanges();
+            return Ok("Room is deleted!");
             #endregion
         }
 

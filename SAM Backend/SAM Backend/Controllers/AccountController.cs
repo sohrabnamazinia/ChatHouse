@@ -143,7 +143,7 @@ namespace SAM_Backend.Controllers
             #endregion
         }
 
-
+        #region TODO
         [HttpPost]
         [Authorize]
         public ActionResult Logout()
@@ -151,7 +151,7 @@ namespace SAM_Backend.Controllers
             // TODO: insert token to black list
             return Ok();
         }
-
+        #endregion
 
         [HttpGet]
         [Authorize]
