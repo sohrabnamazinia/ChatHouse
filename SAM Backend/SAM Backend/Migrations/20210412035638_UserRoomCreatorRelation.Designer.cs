@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAM_Backend.Models;
 
 namespace SAM_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210412035638_UserRoomCreatorRelation")]
+    partial class UserRoomCreatorRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,21 +34,6 @@ namespace SAM_Backend.Migrations
                     b.HasIndex("FollowingsId");
 
                     b.ToTable("AppUserAppUser");
-                });
-
-            modelBuilder.Entity("AppUserRoom", b =>
-                {
-                    b.Property<int>("InRoomsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MembersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("InRoomsId", "MembersId");
-
-                    b.HasIndex("MembersId");
-
-                    b.ToTable("AppUserRoom");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -329,17 +316,8 @@ namespace SAM_Backend.Migrations
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("InterestsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -347,8 +325,6 @@ namespace SAM_Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("InterestsId");
 
                     b.ToTable("Rooms");
                 });
@@ -365,21 +341,6 @@ namespace SAM_Backend.Migrations
                         .WithMany()
                         .HasForeignKey("FollowingsId")
                         .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AppUserRoom", b =>
-                {
-                    b.HasOne("SAM_Backend.Models.Room", null)
-                        .WithMany()
-                        .HasForeignKey("InRoomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SAM_Backend.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("MembersId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -449,13 +410,7 @@ namespace SAM_Backend.Migrations
                         .WithMany("CreatedRooms")
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("SAM_Backend.Models.Interests", "Interests")
-                        .WithMany()
-                        .HasForeignKey("InterestsId");
-
                     b.Navigation("Creator");
-
-                    b.Navigation("Interests");
                 });
 
             modelBuilder.Entity("SAM_Backend.Models.AppUser", b =>

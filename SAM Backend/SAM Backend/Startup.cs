@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SAM_Backend.Models;
+using SAM_Backend.Services;
 using SAM_Backend.Utility;
 using System;
 using System.Collections.Generic;
@@ -23,21 +24,48 @@ namespace SAM_Backend
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            this.env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IWebHostEnvironment env;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            #region default
+            #region Services
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SAM_Backend", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
             });
+            });
+            services.AddScoped<IJWTService, JWTService>();
+            services.AddScoped<IMinIOService, MinIOService>();
             #endregion default
             #region CORS
             services.AddCors(o => o.AddPolicy(Constants.CORSPolicyName, builder =>
@@ -59,7 +87,42 @@ namespace SAM_Backend
                     ValidateIssuer = false
                 };
             });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser().Build();
+                });
+                options.DefaultPolicy = options.GetPolicy(JwtBearerDefaults.AuthenticationScheme);
+            }
+            );
             #endregion Auth Policies
+            #region Password Complexity
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.AllowedUserNameCharacters = Constants.PasswordAllowedUserNameCharacters;
+                if (env.IsDevelopment())
+                {
+                    options.SignIn.RequireConfirmedEmail = true;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 3;
+                    options.Password.RequireUppercase = false;
+                    options.Lockout.MaxFailedAccessAttempts = 10;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+                }
+                else
+                {
+                    options.SignIn.RequireConfirmedEmail = true;
+                    options.Password.RequiredLength = 10;
+                    options.Password.RequiredUniqueChars = 3;
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                }
+
+            });
+            #endregion
             #region Db
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -68,7 +131,7 @@ namespace SAM_Backend
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(Constants.DefaultLockoutTimeSpan);
             }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
             services.AddDbContextPool<AppDbContext>(
-            options => options.UseSqlServer(Configuration.GetConnectionString(Constants.ConnectionStringKey)));
+            options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString(Constants.ConnectionStringKey)));
             #endregion Db
         }
 
@@ -79,7 +142,10 @@ namespace SAM_Backend
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SAM_Backend v1"));
+                app.UseSwaggerUI(c => 
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SAM_Backend v1");
+                });
             }
 
             app.UseHttpsRedirection();
