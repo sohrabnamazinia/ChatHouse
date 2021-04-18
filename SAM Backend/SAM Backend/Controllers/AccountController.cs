@@ -59,7 +59,7 @@ namespace SAM_Backend.Controllers
             #endregion
 
             #region Signup attempt
-            var newUser = new AppUser() { Email = model.Email, UserName = model.Username, Followers = new List<AppUser>(), Followings = new List<AppUser>(), Interests = new Interests() };
+            var newUser = new AppUser() { Email = model.Email, UserName = model.Username, Followers = new List<AppUser>(), Followings = new List<AppUser>(), Interests = new Interests(), CreatedRooms = new List<Room>(), InRooms = new List<Room>() };
             var result = await userManager.CreateAsync(newUser, model.Password);
 
             if (!result.Succeeded)
