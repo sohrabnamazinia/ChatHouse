@@ -44,6 +44,7 @@ namespace SAM_Backend.Controllers
             var endDate = model.EndDate != null ? model.EndDate.Value : DateTime.Parse(startDate.ToString()).Add(TimeSpan.FromHours(Constants.RoomDefaultExpirationPeriodInHours));
             if (DateTime.Compare(startDate, endDate) >= 0) return BadRequest("End date must be after start date!");
             if (DateTime.Compare(DateTime.Now, endDate) >= 0) return BadRequest("Room date has been expired!");
+            if (DateTime.Compare(DateTime.Now, startDate) > 0) startDate = DateTime.Now;
             var updatedInterests = model.Interests;
             if (!(InterestsService.IsValidRoomInterest(updatedInterests))) return BadRequest(Constants.InterestsRoomFormatError);
             #endregion
@@ -171,6 +172,7 @@ namespace SAM_Backend.Controllers
                 if (model.StartDate != null)
                 {
                     if (DateTime.Compare(model.StartDate.Value, model.EndDate.Value) >= 0) return BadRequest("End date must be after start date!");
+                    if (DateTime.Compare(DateTime.Now, model.StartDate.Value) > 0) model.StartDate = DateTime.Now;
                     room.StartDate = model.StartDate.Value;
                 }
                 room.EndDate = model.EndDate.Value;
