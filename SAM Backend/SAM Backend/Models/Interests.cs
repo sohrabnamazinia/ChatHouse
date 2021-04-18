@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAM_Backend.Utility;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -64,7 +65,7 @@ namespace SAM_Backend.Models
             return result;
         }
 
-        public static void SetInterests(List<List<int>> interests, AppUser user)
+        public static void SetInterestsForUser(List<List<int>> interests, AppUser user)
         {
             Wellness wellness = (Wellness)BitWiseOr(interests[0]);
             Identity identity = (Identity)BitWiseOr(interests[1]);
@@ -96,6 +97,55 @@ namespace SAM_Backend.Models
             user.Interests.Entertainment = entertainment;
             user.Interests.Faith = faith;
         }
+
+        public static void SetInterestsForRoom(List<List<int>> interests, Room room)
+        {
+            Wellness wellness = (Wellness)BitWiseOr(interests[0]);
+            Identity identity = (Identity)BitWiseOr(interests[1]);
+            Places places = (Places)BitWiseOr(interests[2]);
+            WorldAffairs worldAffairs = (WorldAffairs)BitWiseOr(interests[3]);
+            Tech tech = (Tech)BitWiseOr(interests[4]);
+            HangingOut hangingOut = (HangingOut)BitWiseOr(interests[5]);
+            KnowLedge knowLedge = (KnowLedge)BitWiseOr(interests[6]);
+            Hustle hustle = (Hustle)BitWiseOr(interests[7]);
+            Sports sports = (Sports)BitWiseOr(interests[8]);
+            Arts arts = (Arts)BitWiseOr(interests[9]);
+            Life life = (Life)BitWiseOr(interests[10]);
+            Languages languages = (Languages)BitWiseOr(interests[11]);
+            Entertainment entertainment = (Entertainment)BitWiseOr(interests[12]);
+            Faith faith = (Faith)BitWiseOr(interests[13]);
+
+            room.Interests.Wellness = wellness;
+            room.Interests.Identity = identity;
+            room.Interests.Places = places;
+            room.Interests.WorldAffairs = worldAffairs;
+            room.Interests.Tech = tech;
+            room.Interests.HangingOut = hangingOut;
+            room.Interests.KnowLedge = knowLedge;
+            room.Interests.Hustle = hustle;
+            room.Interests.Sports = sports;
+            room.Interests.Arts = arts;
+            room.Interests.Life = life;
+            room.Interests.Languages = languages;
+            room.Interests.Entertainment = entertainment;
+            room.Interests.Faith = faith;
+        }
+
+        public static bool IsValidRoomInterest(List<List<int>> interests)
+        {
+            if (interests.Count != Constants.InterestCategoriesCount) return false;
+            var isOne = 0;
+            foreach (var innerList in interests)
+            {
+                foreach (var num in innerList)
+                {
+                    isOne++;
+                }
+            }
+            if (isOne != 1) return false;
+            return true;
+        }
+
 
         public static List<List<int>> ConvertInterestsToLists(Interests interest)
         {

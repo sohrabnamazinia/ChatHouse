@@ -15,6 +15,14 @@ namespace SAM_Backend.Models
                 
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Room>().HasOne<AppUser>(x => x.Creator).WithMany(x => x.CreatedRooms);
+
+        }
+
+        public DbSet<Room> Rooms { get; set; }
 
     }
 }

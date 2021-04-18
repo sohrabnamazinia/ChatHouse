@@ -59,7 +59,7 @@ namespace SAM_Backend.Controllers
             #endregion
 
             #region Signup attempt
-            var newUser = new AppUser() { Email = model.Email, UserName = model.Username, Followers = new List<AppUser>(), Followings = new List<AppUser>(), Interests = new Interests() };
+            var newUser = new AppUser() { Email = model.Email, UserName = model.Username, Followers = new List<AppUser>(), Followings = new List<AppUser>(), Interests = new Interests(), CreatedRooms = new List<Room>(), InRooms = new List<Room>() };
             var result = await userManager.CreateAsync(newUser, model.Password);
 
             if (!result.Succeeded)
@@ -143,7 +143,7 @@ namespace SAM_Backend.Controllers
             #endregion
         }
 
-
+        #region TODO
         [HttpPost]
         [Authorize]
         public ActionResult Logout()
@@ -151,7 +151,7 @@ namespace SAM_Backend.Controllers
             // TODO: insert token to black list
             return Ok();
         }
-
+        #endregion
 
         [HttpGet]
         [Authorize]
@@ -245,7 +245,7 @@ namespace SAM_Backend.Controllers
             {
                 var updatedInterests = model.Interests;
                 if (updatedInterests.Count != Constants.InterestCategoriesCount) return BadRequest("List does not contain 14 inner lists!");
-                InterestsService.SetInterests(updatedInterests, user);
+                InterestsService.SetInterestsForUser(updatedInterests, user);
             }
             #endregion Interests
 

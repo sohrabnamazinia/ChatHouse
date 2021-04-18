@@ -16,6 +16,8 @@ namespace SAM_Backend.Utility
         public const string UsernameAllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
         public const string EmailFailedToConfirmedMessage = "Failed to confirm Email!";
         public const string UserNotFoundError = "User not found!";
+        public const string RoomNotFound = "Room not found!";
+        public const string InterestsRoomFormatError = "Interests list is not in a valid format for a Room";
         public const string MinIOBucketUsers = "users";
         public const string MinIOHostAddress = "45.82.139.208:9000";
         public static readonly byte[] png = new byte[] { 137, 80, 78, 71 };
@@ -33,6 +35,7 @@ namespace SAM_Backend.Utility
         public const int InterestCategoriesCount = 14;
         public const int OKStatuseCode = 200;
         public const int PresignedGetObjectExpirationPeriod = 60 * 60 * 24 * 7;
+        public const double RoomDefaultExpirationPeriodInHours = 6;
     }
 
 
