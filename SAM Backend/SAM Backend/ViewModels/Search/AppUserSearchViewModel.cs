@@ -20,7 +20,5 @@ namespace SAM_Backend.ViewModels.Search
             this.LastName = user.LastName;
             this.ImageLink = user.ImageLink;
         }
-
-        // Image
     }
 }
