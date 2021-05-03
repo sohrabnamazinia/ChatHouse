@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SAM_Backend.Hubs;
 using SAM_Backend.Models;
 using SAM_Backend.Services;
 using SAM_Backend.Utility;
@@ -64,6 +65,7 @@ namespace SAM_Backend
                 }
             });
             });
+            services.AddSignalR();
             services.AddScoped<IJWTService, JWTService>();
             services.AddScoped<IMinIOService, MinIOService>();
             #endregion default
@@ -163,6 +165,7 @@ namespace SAM_Backend
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatRoomHub>(Constants.ChatRoomHubRoute);
                 endpoints.MapControllerRoute(Constants.RouteName, Constants.RoutePattern);
             });
             #endregion Ordered Middlewares
