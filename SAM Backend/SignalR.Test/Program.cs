@@ -19,11 +19,22 @@ namespace SignalRClient
             var client = new ChatRoomHubClient(token1);
             client.Connect();
             client.DefineMethods();
-            client.SendMessage("Sohrab", "Hi!");
+            //client.SendMessage("Sohrab", "Hi!");
             var client2 = new ChatRoomHubClient(token1);
             client2.Connect();
             client2.DefineMethods();
-            client2.SendMessage("Sohrab", "Hello!");
+            MessageModel messageModel = new MessageModel()
+            {
+                MessageType = MessageType.Text,
+                Message = "Hummmmm"
+            };
+            MessageSenderModel senderModel = new MessageSenderModel()
+            {
+                FirstName = "Cristiano",
+                LastName = "Ronaldo",
+                Username = "Cristiano_Ronaldo",
+            };
+            client2.SendMessage(senderModel, messageModel);
             #endregion Test playGorund
         }
 

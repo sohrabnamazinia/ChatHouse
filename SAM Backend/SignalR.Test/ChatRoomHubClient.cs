@@ -41,17 +41,17 @@ namespace SignalRClient
 
         public void DefineMethods()
         {
-            connection.On<string>("ReceiveMessage", (message) =>
+            connection.On<MessageSenderModel, MessageModel>("ReceiveMessage", (senderModel, messageModel) =>
             {
-                Console.WriteLine(message);
+                Console.WriteLine(senderModel.FirstName + " " + senderModel.LastName + " : " + messageModel.Message.ToString());
             });
         }
 
-        public void SendMessage(string user, string message)
+        public void SendMessage(MessageSenderModel senderModel, MessageModel messageModel)
         {
             try
             {
-                connection.InvokeAsync("SendMessage", user, message).Wait();
+                connection.InvokeAsync("SendMessage", senderModel, messageModel).Wait();
             }
             catch (Exception ex)
             {
