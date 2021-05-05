@@ -25,7 +25,6 @@ namespace SAM_Backend
 {
     public class Startup
     {
-
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;

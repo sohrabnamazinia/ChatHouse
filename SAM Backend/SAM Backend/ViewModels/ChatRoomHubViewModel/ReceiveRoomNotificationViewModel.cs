@@ -5,17 +5,16 @@ using System.Threading.Tasks;
 
 namespace SAM_Backend.ViewModels.ChatRoomHubViewModel
 {
-    public class MessageViewModel
+    public class ReceiveRoomNotificationViewModel
     {
+        public RoomNotification Notification { get; set; }
         public ChatRoomHubUserViewModel UserModel { get; set; }
-        public MessageType MessageType { get; set; }
-        public Object Message { get; set; }
-        public int RoomId{ get; set; }
+        public int RoomId { get; set; }
     }
 
-    public enum MessageType
+    public enum RoomNotification
     {
-        Text,
-        File
+        Join,
+        Left
     }
 }

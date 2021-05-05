@@ -8,8 +8,18 @@ namespace SignalR.Test
 {
     public class MessageModel
     {
+        public ChatRoomHubUserViewModel UserModel { get; set; }
         public MessageType MessageType { get; set; }
         public Object Message { get; set; }
+        public int RoomId { get; set; }
+    }
+
+    public class ChatRoomHubUserViewModel
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Username { get; set; }
+        public string ImageLink { get; set; }
     }
 
     public enum MessageType
@@ -19,11 +29,29 @@ namespace SignalR.Test
         File
     }
 
-    public class MessageSenderModel
+    public class LeaveRoomViewModel
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Username { get; set; }
-        public string ImageLink { get; set; }
+        public ChatRoomHubUserViewModel UserModel { get; set; }
+        public int RoomId { get; set; }
+    }
+
+    public class JoinRoomViewModel
+    {
+        public ChatRoomHubUserViewModel UserModel { get; set; }
+        public int RoomId { get; set; }
+    }
+
+    public class ReceiveRoomNotification
+    {
+        public RoomNotification Notification { get; set; }
+        public ChatRoomHubUserViewModel UserModel { get; set; }
+        public int RoomId { get; set; }
+
+    }
+
+    public enum RoomNotification
+    {
+        Join,
+        Left
     }
 }

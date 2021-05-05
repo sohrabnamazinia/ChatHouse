@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SAM_Backend.ViewModels.ChatRoomHubViewModel
 {
-    public class MessageSenderViewModel
+    public class ChatRoomHubUserViewModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
