@@ -177,6 +177,16 @@ namespace SAM_Backend.Controllers
                 }
                 room.EndDate = model.EndDate.Value;
             }
+            else if (model.StartDate != null)
+            {
+                if (DateTime.Compare(DateTime.Now, model.StartDate.Value) >= 0) model.StartDate = DateTime.Now;
+                if (model.EndDate != null)
+                {
+                    if (DateTime.Compare(model.StartDate.Value, model.EndDate.Value) >= 0) return BadRequest("End date must be after start date!");
+                    room.StartDate = model.StartDate.Value;
+                }
+
+            }
             #endregion
 
             #region Interests
