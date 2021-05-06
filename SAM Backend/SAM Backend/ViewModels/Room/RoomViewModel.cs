@@ -23,7 +23,7 @@ namespace SAM_Backend.ViewModels.Room
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 ImageLink = x.ImageLink,
-                Username = x.ImageLink
+                Username = x.UserName
             }).ToList();
             StartDate = room.StartDate;
             EndDate = room.EndDate;
