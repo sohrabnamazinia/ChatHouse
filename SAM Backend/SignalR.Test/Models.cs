@@ -12,6 +12,7 @@ namespace SignalR.Test
         public MessageType MessageType { get; set; }
         public Object Message { get; set; }
         public int RoomId { get; set; }
+        public bool IsMe { get; set; }
     }
 
     public class ChatRoomHubUserViewModel
@@ -46,6 +47,7 @@ namespace SignalR.Test
         public RoomNotification Notification { get; set; }
         public ChatRoomHubUserViewModel UserModel { get; set; }
         public int RoomId { get; set; }
+        public bool IsMe { get; set; }
 
     }
 

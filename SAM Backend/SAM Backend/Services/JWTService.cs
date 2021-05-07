@@ -73,7 +73,7 @@ namespace SAM_Backend.Services
             }
             catch (IndexOutOfRangeException e)
             {
-                return null;
+                throw new Exception(e.Message);
             }
             if (authorization.IsNullOrEmpty())
             {

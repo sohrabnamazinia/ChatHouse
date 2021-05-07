@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAM Backend", "SAM Backend\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAM.Tests", "SAM.Tests\SAM.Tests.csproj", "{A0461E6B-C637-4D20-99CC-38FAE2815285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.Test", "SignalR.Test\SignalR.Test.csproj", "{9598567F-CF0B-40D8-A887-92B46AA4322F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalR.Test", "SignalR.Test\SignalR.Test.csproj", "{9598567F-CF0B-40D8-A887-92B46AA4322F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

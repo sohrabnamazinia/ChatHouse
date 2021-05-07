@@ -25,19 +25,11 @@ namespace SAM_Backend.Hubs
 
         public Task SendMessageToRoom(MessageViewModel messageModel)
         {
-            #region Text 
-            if (messageModel.MessageType == MessageType.Text)
-            {
-                return Clients.Group(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
-            }
-            #endregion
-
-            #region File
-            else
-            {
-                return Clients.Group(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", "Message Format not supported yet");
-            }
-            #endregion
+            messageModel.IsMe = false;
+            Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
+            messageModel.IsMe = true;
+            Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
+            return Task.CompletedTask;
         }
 
         public async Task JoinRoom(JoinRoomViewModel inputModel)
@@ -75,7 +67,10 @@ namespace SAM_Backend.Hubs
                 UserModel = inputModel.UserModel,
                 RoomId = inputModel.RoomId
             };
-            await Clients.Group(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
+            notificationViewModel.IsMe = false;
+            await Clients.OthersInGroup(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
+            notificationViewModel.IsMe = true;
+            await Clients.Caller.SendAsync("ReceiveRoomNotification", notificationViewModel);
             #endregion
         }
 
@@ -91,9 +86,13 @@ namespace SAM_Backend.Hubs
             #endregion
 
             #region attempt
-            await Clients.Group(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
+            notificationViewModel.IsMe = false;
+            await Clients.OthersInGroup(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
+            notificationViewModel.IsMe = true;
+            await Clients.Caller.SendAsync("ReceiveRoomNotification", notificationViewModel);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, inputModel.RoomId.ToString());
             #endregion
         }
+
     }
 }

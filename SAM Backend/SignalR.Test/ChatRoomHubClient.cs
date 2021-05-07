@@ -50,7 +50,15 @@ namespace SignalRClient
                 string senderLastName = messageModel.UserModel.LastName;
                 string senderUsername = messageModel.UserModel.Username;
                 string senderImageLink = messageModel.UserModel.ImageLink;
-                Console.WriteLine("New Message From " + senderFirstName + " " + senderLastName + " To  Room number #" + RoomId + ":");
+                bool IsMe = messageModel.IsMe;
+                if (IsMe)
+                {
+                    Console.WriteLine("Your Message To  Room number #" + RoomId + ":");
+                }
+                else
+                {
+                    Console.WriteLine("New Message From " + senderFirstName + " " + senderLastName + " To  Room number #" + RoomId + ":");
+                }
                 Console.WriteLine("\t" + message);
 
             });
@@ -59,11 +67,25 @@ namespace SignalRClient
             {
                 if (ReceiveRoomNotification.Notification == RoomNotification.Join)
                 {
-                    Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Joined room number " + ReceiveRoomNotification.RoomId);
+                    if (ReceiveRoomNotification.IsMe)
+                    {
+                        Console.WriteLine("You joined room number " + ReceiveRoomNotification.RoomId);
+                    }
+                    else
+                    {
+                        Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Joined room number " + ReceiveRoomNotification.RoomId);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Left room number " + ReceiveRoomNotification.RoomId);
+                    if (ReceiveRoomNotification.IsMe)
+                    {
+                        Console.WriteLine("You left room number " + ReceiveRoomNotification.RoomId);
+                    }
+                    else
+                    {
+                        Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Left room number " + ReceiveRoomNotification.RoomId);
+                    }
                 }
             });
         }

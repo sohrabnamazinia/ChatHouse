@@ -16,10 +16,11 @@ namespace SignalRClient
 
             #region create clients
             var token1 = ClientUtils.token1;
+            var token2 = ClientUtils.token2;
             var client1 = new ChatRoomHubClient(token1);
             client1.Connect();
             client1.DefineMethods();
-            var client2 = new ChatRoomHubClient(token1);
+            var client2 = new ChatRoomHubClient(token2);
             client2.Connect();
             client2.DefineMethods();
             #endregion create clients
@@ -89,10 +90,9 @@ namespace SignalRClient
             client1.SendMessageToRoom(messageModel1);
             client2.SendMessageToRoom(messageModel2);
 
-            //client1.LeaveRoom(leaveRoomViewModel1);
-            //client2.LeaveRoom(leaveRoomViewModel2);
+            client1.LeaveRoom(leaveRoomViewModel1);
+            client2.LeaveRoom(leaveRoomViewModel2);
             #endregion run tests
-
         }
     }
 }
