@@ -185,7 +185,7 @@ namespace SAM_Backend.Controllers
                     if (DateTime.Compare(model.StartDate.Value, model.EndDate.Value) >= 0) return BadRequest("End date must be after start date!");
                     room.StartDate = model.StartDate.Value;
                 }
-
+                room.StartDate = model.StartDate.Value;
             }
             #endregion
 
