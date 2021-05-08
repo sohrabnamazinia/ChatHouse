@@ -487,7 +487,6 @@ namespace SAM_Backend.Controllers
             AppUser user = await jWTService.FindUserByTokenAsync(Request, context);
             #endregion
 
-
             #region Find Rooms
 
             List<Room> rooms = user.Followings.Select(x => x.InRooms.Union(x.CreatedRooms)).SelectMany(x => x)

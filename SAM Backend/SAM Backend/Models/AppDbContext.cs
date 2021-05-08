@@ -23,6 +23,7 @@ namespace SAM_Backend.Models
         }
 
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<RoomMessage> RoomsMessages { get; set; }
 
     }
 }
