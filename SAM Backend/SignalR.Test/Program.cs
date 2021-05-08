@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SAM_Backend.Models;
 using SignalR.Test;
 using System;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace SignalRClient
         public static void Main(string[] args)
         {
             #region Set delay for main project setup
-            //Thread.Sleep(5000);
+            //Thread.Sleep(20000);
             #endregion
 
             #region create clients
@@ -58,7 +59,7 @@ namespace SignalRClient
             {
                 FirstName = "Lionel",
                 LastName = "Messi",
-                Username = "xxx",
+                Username = "sss",
                 ImageLink = "ImageLink2"
             };
 
@@ -84,15 +85,21 @@ namespace SignalRClient
             #endregion
 
             #region run tests
-            client1.JoinRoom(joinRoomViewModel1);
-            client2.JoinRoom(joinRoomViewModel2);
+            //client1.JoinRoom(joinRoomViewModel1);
+            //client2.JoinRoom(joinRoomViewModel2);
 
-            client1.SendMessageToRoom(messageModel1);
-            client2.SendMessageToRoom(messageModel2);
+            //client1.SendMessageToRoom(messageModel1);
+            //client2.SendMessageToRoom(messageModel2);
 
-            client1.LeaveRoom(leaveRoomViewModel1);
-            client2.LeaveRoom(leaveRoomViewModel2);
+            //client1.LeaveRoom(leaveRoomViewModel1);
+            //client2.LeaveRoom(leaveRoomViewModel2);
+
+            client1.LoadRoomAllMessages(3, UserModel1.Username);
             #endregion run tests
+
+            #region not close
+            while (true);
+            #endregion
         }
     }
 }

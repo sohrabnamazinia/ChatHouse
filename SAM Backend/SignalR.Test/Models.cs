@@ -26,8 +26,9 @@ namespace SignalR.Test
     public enum MessageType
     {
         Text,
-        Image,
-        File
+        File,
+        JoinNotification,
+        LeftNotification
     }
 
     public class LeaveRoomViewModel
@@ -55,5 +56,17 @@ namespace SignalR.Test
     {
         Join,
         Left
+    }
+
+    public class LoadMessageViewModel
+    {
+        public int Id { get; set; }
+        public int ParentId { get; set; }
+        public string Content { get; set; }
+        public MessageType ContetntType { get; set; }
+        public DateTime SentDate { get; set; }
+        public ChatRoomHubUserViewModel Sender { get; set; }
+        public bool IsMe { get; set; }
+        public int RoomId { get; set; }
     }
 }

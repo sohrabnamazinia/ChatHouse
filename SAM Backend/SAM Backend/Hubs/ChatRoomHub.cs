@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.SignalR;
 using SAM_Backend.Models;
 using SAM_Backend.ViewModels.ChatRoomHubViewModel;
+using SAM_Backend.ViewModels.Hubs.ChatRoomHubViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SAM_Backend.Hubs
@@ -22,14 +24,40 @@ namespace SAM_Backend.Hubs
             this.userManager = userManager;
             #endregion DI
         }
-
-        public Task SendMessageToRoom(MessageViewModel messageModel)
+        
+        public async Task SendMessageToRoom(MessageViewModel messageModel)
         {
-            messageModel.IsMe = false;
-            Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
-            messageModel.IsMe = true;
-            Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
-            return Task.CompletedTask;
+            #region Text
+            if (messageModel.MessageType == MessageType.Text)
+            {
+                messageModel.IsMe = false;
+                await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
+                messageModel.IsMe = true;
+                await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
+
+                #region Db
+                RoomMessage message = new RoomMessage()
+                {
+                    SentDate = DateTime.Now,
+                    Sender = await userManager.FindByNameAsync(messageModel.UserModel.Username),
+                    ContentType = MessageType.Text,
+                    Content = messageModel.Message.ToString(),
+                    Room = DbContext.Rooms.Find(messageModel.RoomId),
+                    Parent = messageModel.ParentId != -1 ? DbContext.RoomsMessages.Find(messageModel.ParentId) : null
+                };
+                DbContext.RoomsMessages.Add(message);
+                DbContext.SaveChanges();
+                #endregion Db
+                return;
+            }
+            #endregion Text
+
+            #region File
+            else
+            {
+                throw new Exception("Non text message types not supported yey");
+            }
+            #endregion File
         }
 
         public async Task JoinRoom(JoinRoomViewModel inputModel)
@@ -51,14 +79,14 @@ namespace SAM_Backend.Hubs
                 outputModel.Message = "User not found";
                 throw new Exception(outputModel.Message);
             }
-            else if (room.Members.Contains(user) || room.Creator != user)
+            else if ((!room.Members.Contains(user)) && room.Creator != user)
             {
                 outputModel.Message = "User is not a member of the room!";
                 throw new Exception(outputModel.Message);
             }
             #endregion
 
-            #region done
+            #region attempt
             await Groups.AddToGroupAsync(Context.ConnectionId, inputModel.RoomId.ToString());
             outputModel.Done = true;
             ReceiveRoomNotificationViewModel notificationViewModel = new ReceiveRoomNotificationViewModel()
@@ -71,6 +99,16 @@ namespace SAM_Backend.Hubs
             await Clients.OthersInGroup(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
             notificationViewModel.IsMe = true;
             await Clients.Caller.SendAsync("ReceiveRoomNotification", notificationViewModel);
+            #region Db
+            //RoomMessage message = new RoomMessage()
+            //{
+            //    ContentType = MessageType.JoinNotification,
+            //    Room = DbContext.Rooms.Find(inputModel.RoomId),
+            //    SentDate = DateTime.Now,
+            //    Sender = await userManager.FindByNameAsync(inputModel.UserModel.Username),
+            //};
+            //DbContext.RoomsMessages.Add(message);
+            #endregion Db
             #endregion
         }
 
@@ -84,13 +122,46 @@ namespace SAM_Backend.Hubs
                 RoomId = inputModel.RoomId
             };
             #endregion
-
+            
             #region attempt
             notificationViewModel.IsMe = false;
             await Clients.OthersInGroup(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
             notificationViewModel.IsMe = true;
             await Clients.Caller.SendAsync("ReceiveRoomNotification", notificationViewModel);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, inputModel.RoomId.ToString());
+
+            #region Db
+            //RoomMessage message = new RoomMessage()
+            //{
+            //    ContentType = MessageType.LeftNotification,
+            //    Room = DbContext.Rooms.Find(inputModel.RoomId),
+            //    SentDate = DateTime.Now,
+            //    Sender = await userManager.FindByNameAsync(inputModel.UserModel.Username),
+            //};
+            //DbContext.RoomsMessages.Add(message);
+            #endregion Db
+            #endregion
+        }
+
+        public async Task LoadRoomMessages(int RoomId, string Username)
+        {
+            #region fetch messages
+            List<LoadMessageViewModel> messages = null;
+            List<RoomMessage> roomMessages = null;
+            try
+            {
+                roomMessages = DbContext.RoomsMessages.Where(x => x.Room.Id == RoomId).Select(x => x).ToList();
+                messages = roomMessages.Select(x => new LoadMessageViewModel(x)).ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            #endregion fetch messages
+
+            #region set IsMe & return
+            messages.ForEach(x => x.IsMe = x.Sender.Username.Equals(Username) ? true : false);
+            await Clients.Caller.SendAsync("ReceiveRoomAllMessages", messages);
             #endregion
         }
 

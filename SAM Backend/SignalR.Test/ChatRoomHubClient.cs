@@ -44,7 +44,7 @@ namespace SignalRClient
             connection.On<MessageModel>("ReceiveRoomMessage", (messageModel) =>
             {
                 int RoomId = messageModel.RoomId;
-                int messageType = (int) messageModel.MessageType;
+                int messageType = (int)messageModel.MessageType;
                 string message = messageModel.Message.ToString();
                 string senderFirstName = messageModel.UserModel.FirstName;
                 string senderLastName = messageModel.UserModel.LastName;
@@ -88,6 +88,30 @@ namespace SignalRClient
                     }
                 }
             });
+
+            connection.On<List<LoadMessageViewModel>>("ReceiveRoomAllMessages", (messages) =>
+            {
+                Console.WriteLine("Loading Messages:");
+                foreach (var x in messages)
+                {
+                    string sender = "";
+                    if (x.IsMe) sender = "You";
+                    else sender = x.Sender.Username;
+                    if (x.ContetntType == MessageType.Text)
+                    {
+                        Console.WriteLine(sender + " : " + x.Content + "\t" + x.SentDate.ToString());
+                    }
+                    else if (x.ContetntType == MessageType.JoinNotification)
+                    {
+                        Console.WriteLine(sender + " Joined room number " + x.RoomId);
+                    }
+                    else if (x.ContetntType == MessageType.LeftNotification)
+                    {
+                        Console.WriteLine(sender + " Left room number " + x.RoomId);
+                    }
+                }
+                Console.WriteLine("*********************************");
+            });
         }
 
         public void SendMessageToRoom(MessageModel messageModel)
@@ -126,6 +150,17 @@ namespace SignalRClient
             }
         }
 
+        public void LoadRoomAllMessages(int RoomId, string Username)
+        {
+            try
+            {
+                connection.InvokeAsync("LoadRoomMessages", RoomId, Username).Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
         #endregion Methods
     }
 }
