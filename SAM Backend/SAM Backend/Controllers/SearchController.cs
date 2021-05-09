@@ -342,7 +342,7 @@ namespace SAM_Backend.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> RoomItem(string name, int? category, int item, [FromQuery] PaginationParameters pagination)
+        public async Task<ActionResult<ICollection<RoomSearchViewModel>>> RoomItem(string name, int? category, int item, [FromQuery] PaginationParameters pagination)
         {
 
             #region check input
@@ -358,7 +358,7 @@ namespace SAM_Backend.Controllers
 
             #endregion
 
-            #region create users Query
+            #region create Rooms Query
             IQueryable<Room> roomsQuery;
             switch (category)
             {
@@ -433,7 +433,7 @@ namespace SAM_Backend.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> RoomSuggestByInterests([FromQuery] PaginationParameters pagination)
+        public async Task<ActionResult<ICollection<RoomSearchViewModel>>> RoomSuggestByInterests([FromQuery] PaginationParameters pagination)
         {
             #region Find user by token
             AppUser user = await jWTService.FindUserByTokenAsync(Request, context);
@@ -481,7 +481,7 @@ namespace SAM_Backend.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ICollection<AppUserSearchViewModel>>> RoomSuggestByFollowings([FromQuery] PaginationParameters pagination)
+        public async Task<ActionResult<ICollection<RoomSearchByFollowingsViewModel>>> RoomSuggestByFollowings([FromQuery] PaginationParameters pagination)
         {
             #region Find user by token
             AppUser user = await jWTService.FindUserByTokenAsync(Request, context);
