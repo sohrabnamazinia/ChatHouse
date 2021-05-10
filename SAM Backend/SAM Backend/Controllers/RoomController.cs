@@ -7,6 +7,7 @@ using SAM_Backend.Models;
 using SAM_Backend.Services;
 using SAM_Backend.Utility;
 using SAM_Backend.ViewModels.Account;
+using SAM_Backend.ViewModels.ChatRoomHubViewModel;
 using SAM_Backend.ViewModels.Room;
 using System;
 using System.Collections.Generic;
@@ -86,8 +87,19 @@ namespace SAM_Backend.Controllers
 
             #region return
             room.Members.Add(user);
-            //user.InRooms.Add(room);
             context.SaveChanges();
+
+            #region Save Notif
+            RoomMessage message = new RoomMessage()
+            {
+                ContentType = MessageType.JoinNotification,
+                Room = context.Rooms.Find(roomId),
+                SentDate = DateTime.Now,
+                Sender = await userManager.FindByNameAsync(user.UserName),
+            };
+            context.RoomsMessages.Add(message);
+            context.SaveChanges();
+            #endregion Save Notif
             return Ok(new AppUserViewModel(user));
             #endregion
         }
@@ -146,6 +158,18 @@ namespace SAM_Backend.Controllers
 
             #region return 
             context.SaveChanges();
+
+            #region Save Notif
+            RoomMessage message = new RoomMessage()
+            {
+                ContentType = MessageType.LeftNotification,
+                Room = context.Rooms.Find(roomId),
+                SentDate = DateTime.Now,
+                Sender = await userManager.FindByNameAsync(user.UserName),
+            };
+            context.RoomsMessages.Add(message);
+            context.SaveChanges();
+            #endregion Save Notif
             return Ok(new AppUserViewModel(user));
             #endregion
         }
@@ -176,6 +200,16 @@ namespace SAM_Backend.Controllers
                     room.StartDate = model.StartDate.Value;
                 }
                 room.EndDate = model.EndDate.Value;
+            }
+            else if (model.StartDate != null)
+            {
+                if (DateTime.Compare(DateTime.Now, model.StartDate.Value) >= 0) model.StartDate = DateTime.Now;
+                if (model.EndDate != null)
+                {
+                    if (DateTime.Compare(model.StartDate.Value, model.EndDate.Value) >= 0) return BadRequest("End date must be after start date!");
+                    room.StartDate = model.StartDate.Value;
+                }
+                room.StartDate = model.StartDate.Value;
             }
             #endregion
 

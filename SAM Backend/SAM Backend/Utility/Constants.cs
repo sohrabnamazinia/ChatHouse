@@ -20,6 +20,7 @@ namespace SAM_Backend.Utility
         public const string InterestsRoomFormatError = "Interests list is not in a valid format for a Room";
         public const string MinIOBucketUsers = "users";
         public const string MinIOHostAddress = "45.82.139.208:9000";
+        public const string ChatRoomHubRoute = "/Hubs/ChatRoom";
         public static readonly byte[] png = new byte[] { 137, 80, 78, 71 };
         public static readonly byte[] tiff = new byte[] { 73, 73, 42 };
         public static readonly byte[] tiff2 = new byte[] { 77, 77, 42 };

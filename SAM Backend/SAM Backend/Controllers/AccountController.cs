@@ -114,6 +114,7 @@ namespace SAM_Backend.Controllers
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             #region Find user
+            if (!ModelState.IsValid) return BadRequest("Input Model is not valid");
             AppUser user = model.IsEmail ? await userManager.FindByEmailAsync(model.Identifier) : await userManager.FindByNameAsync(model.Identifier);
             if (user == null) return NotFound(Constants.UserNotFoundError);
             #endregion
