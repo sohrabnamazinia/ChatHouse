@@ -25,7 +25,8 @@ namespace SAM_Backend.ViewModels.Account
                 {
                     FirstName = f.FirstName,
                     LastName = f.LastName,
-                    Username = f.UserName
+                    Username = f.UserName,
+                    ImageLink = f.ImageLink
                 });
             }
             foreach (var f in user.Followers)
@@ -34,7 +35,8 @@ namespace SAM_Backend.ViewModels.Account
                 {
                     FirstName = f.FirstName,
                     LastName = f.LastName,
-                    Username = f.UserName
+                    Username = f.UserName,
+                    ImageLink = f.ImageLink
                 });
             }
             CreatedRooms = user.CreatedRooms.Select(x => new RoomViewModel(x)).ToList();

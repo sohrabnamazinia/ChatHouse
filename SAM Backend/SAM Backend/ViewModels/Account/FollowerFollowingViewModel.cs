@@ -10,7 +10,6 @@ namespace SAM_Backend.ViewModels.Account
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
-        // Image
+        public string ImageLink { get; set; }
     }
 }
