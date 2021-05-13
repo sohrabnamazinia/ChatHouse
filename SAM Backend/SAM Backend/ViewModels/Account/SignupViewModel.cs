@@ -9,6 +9,10 @@ namespace SAM_Backend.ViewModels.Account
     public class SignupViewModel
     {
         [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        [Required]
         public string Username { get; set; }
         [Required]
         [EmailAddress]
