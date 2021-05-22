@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,6 +22,13 @@ namespace SAM_Backend.Utility
         public const string MinIOBucketUsers = "users";
         public const string MinIOHostAddress = "45.82.139.208:9000";
         public const string ChatRoomHubRoute = "/Hubs/ChatRoom";
+        public static readonly string SMTPGoogleDomain = "smtp.gmail.com";
+        public static readonly string ProjectEmail = "Chathouse.SAM@gmail.com";
+        public static readonly string ConfirmAccountRegisterationViewPath = Path.DirectorySeparatorChar.ToString() + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplate" + Path.DirectorySeparatorChar.ToString() + "EmailConfirmation.html";
+        public static readonly string ProjectSender = "Eventus Team";
+        public static readonly string ProjectReciever = "User";
+        public static readonly string EmailConfirmationSubject = "Confirm your Email";
+        public static readonly int SMTPPort = 587;
         public static readonly byte[] png = new byte[] { 137, 80, 78, 71 };
         public static readonly byte[] tiff = new byte[] { 73, 73, 42 };
         public static readonly byte[] tiff2 = new byte[] { 77, 77, 42 };
