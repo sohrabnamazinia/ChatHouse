@@ -24,7 +24,7 @@ namespace SAM.Tests
             {
                 HttpContext = mockContext.Object
             };
-            var controller = new AccountController(mockUserManager.Object, mockSigninManager.Object, mockAccountLogger.Object, mockJWTHandler.Object, mockDPProvider.Object, context, MockMinio.Object)
+            var controller = new AccountController(mockUserManager.Object, mockSigninManager.Object, mockAccountLogger.Object, mockJWTHandler.Object, mockDPProvider.Object, context, MockMinio.Object, MockEmail.Object)
             {
                 ControllerContext = controllerContext,
                 Url = mockUrl.Object
