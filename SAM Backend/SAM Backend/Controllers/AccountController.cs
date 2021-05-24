@@ -9,6 +9,7 @@ using SAM_Backend.Models;
 using SAM_Backend.Services;
 using SAM_Backend.Utility;
 using SAM_Backend.ViewModels.Account;
+using SAM_Backend.ViewModels.Email;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,11 @@ namespace SAM_Backend.Controllers
         private readonly IDataProtectionProvider dataProtectionProvider;
         private readonly AppDbContext context;
         private readonly IMinIOService minIOService;
+        private readonly IEmailService emailService;
         private readonly IDataProtector protector;
         #endregion
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context, IMinIOService minIOService)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ILogger<AccountController> logger, IJWTService jWTService, IDataProtectionProvider dataProtectionProvider, AppDbContext context, IMinIOService minIOService, IEmailService emailService)
         {
             #region Instantiation
             this.userManager = userManager;
@@ -42,6 +44,7 @@ namespace SAM_Backend.Controllers
             this.dataProtectionProvider = dataProtectionProvider;
             this.context = context;
             this.minIOService = minIOService;
+            this.emailService = emailService;
             this.protector = dataProtectionProvider.CreateProtector(DataProtectionPurposeStrings.UserIdQueryString);
             this.minIOService = minIOService;
             #endregion
@@ -73,7 +76,14 @@ namespace SAM_Backend.Controllers
             var EmailConfirmationTokoen = await userManager.GenerateEmailConfirmationTokenAsync(newUser);
             var EncryptedId = protector.Protect(newUser.Id);
             var ConfirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { id = EncryptedId, token = EmailConfirmationTokoen }, Request.Scheme);
-            // TODO: Send email
+            emailService.SendEmailConfirmation(new SendEmailConfirmationViewModel
+            {
+                ConfirmationLink = ConfirmationLink,
+                Email = newUser.Email,
+                Username = newUser.UserName,
+                Password = model.Password,
+                FirstName = model.FirstName
+            });
             logger.LogInformation("EmailConfirmation Link: ${}", ConfirmationLink);
             return Ok(new AppUserViewModel(newUser));
             #endregion

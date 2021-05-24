@@ -16,7 +16,7 @@ using System.IO;
 
 namespace SAM_Backend.Services
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         #region Fields
         private readonly IWebHostEnvironment env;
