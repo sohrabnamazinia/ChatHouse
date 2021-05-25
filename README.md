@@ -46,7 +46,7 @@ dotnet run
 If you had any problem with running the project, any idea about making it better, etc, share it with the project collaborators.
 
 ## ChatHouse Front End Project
-[@Sam-front](https://github.com/ali-f-alfa/Sam-front)
+[ChatHouse-Frontend](https://github.com/ali-f-alfa/Sam-front)
 
 ## Authors
   
