@@ -67,6 +67,7 @@ namespace SAM_Backend
             services.AddSignalR();
             services.AddScoped<IJWTService, JWTService>();
             services.AddScoped<IMinIOService, MinIOService>();
+            services.AddScoped<IEmailService, EmailService>();
             #endregion default
             #region CORS
             services.AddCors(o => o.AddPolicy(Constants.CORSPolicyName, builder =>
