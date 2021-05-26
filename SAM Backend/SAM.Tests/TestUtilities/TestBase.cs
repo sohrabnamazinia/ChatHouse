@@ -32,6 +32,7 @@ namespace SAM.Tests
         public Mock<IDataProtectionProvider> mockDPProvider = new Mock<IDataProtectionProvider>();
         public Mock<DataProtectionPurposeStrings> mockDPPurposeStrings = new Mock<DataProtectionPurposeStrings>();
         public Mock<IMinIOService> MockMinio = new Mock<IMinIOService>();
+        public Mock<IEmailService> MockEmail = new Mock<IEmailService>();
         public Mock<IWebHostEnvironment> MockWebHostEnvironment = new Mock<IWebHostEnvironment>();
         public Mock<IConfiguration> Mockconfiguration = new Mock<IConfiguration>();
         public Mock<IUrlHelper> mockUrl = new Mock<IUrlHelper>();

@@ -239,6 +239,9 @@ namespace SAM_Backend.Controllers
             #endregion
 
             #region delete and return
+            var messages = context.RoomsMessages.Where(x => x.Room == room).ToList();
+            context.RoomsMessages.RemoveRange(messages);
+
             context.Rooms.Remove(room);
             context.SaveChanges();
             return Ok("Room is deleted!");

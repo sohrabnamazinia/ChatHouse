@@ -24,7 +24,6 @@ namespace SAM_Backend.Hubs
             this.userManager = userManager;
             #endregion DI
         }
-        
         public async Task SendMessageToRoom(MessageViewModel messageModel)
         {
             #region Text
@@ -59,7 +58,6 @@ namespace SAM_Backend.Hubs
             }
             #endregion File
         }
-
         public async Task JoinRoom(JoinRoomViewModel inputModel)
         {
             #region get room & user
@@ -111,7 +109,6 @@ namespace SAM_Backend.Hubs
             #endregion Db
             #endregion
         }
-
         public async Task LeaveRoom(LeaveRoomViewModel inputModel)
         {
             #region create model
@@ -142,7 +139,6 @@ namespace SAM_Backend.Hubs
             #endregion Db
             #endregion
         }
-
         public async Task LoadRoomMessages(int RoomId, string Username)
         {
             #region fetch messages
