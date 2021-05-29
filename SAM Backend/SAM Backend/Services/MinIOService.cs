@@ -109,5 +109,13 @@ namespace SAM_Backend.Services
             #endregion
         }
 
+        public async Task<int> RemoveImage(AppUser user)
+        {
+            await minio.RemoveObjectAsync(Constants.MinIOBucketUsers, user.ImageName);
+            user.ImageName = null;
+            user.ImageLink = null;
+            context.SaveChanges();
+            return 1;
+        }
     }
 }

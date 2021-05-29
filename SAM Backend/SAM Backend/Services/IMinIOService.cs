@@ -12,5 +12,6 @@ namespace SAM_Backend.Services
     {
         public Task<MinIOResponseModel> UpdateUserImage(IFormFileCollection fileCollection, AppUser user);
         public Task<string> GenerateUrl(string id, string fileName);
+        public Task<int> RemoveImage(AppUser user);
     }
 }
