@@ -296,6 +296,26 @@ namespace SAM_Backend.Controllers
             #endregion return
         }
 
+        [HttpDelete]
+        [Authorize]
+        public async Task<ActionResult> RemoveImage()
+        {
+            #region find user
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            #endregion find user
+
+            #region minio
+            if (user.ImageLink == null) return NotFound("User does not have image");
+            else await minIOService.RemoveImage(user);
+            #endregion minio
+
+            #region return
+            context.SaveChanges();
+            return Ok(new AppUserViewModel(user));
+            #endregion return
+        }
+
+
         #region TODO After Deploy
 
         [HttpGet]
