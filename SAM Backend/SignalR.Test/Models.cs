@@ -69,4 +69,9 @@ namespace SignalR.Test
         public bool IsMe { get; set; }
         public int RoomId { get; set; }
     }
+
+    public class FinishRoomViewModel
+    {
+        public int RoomId { get; set; }
+    }
 }
