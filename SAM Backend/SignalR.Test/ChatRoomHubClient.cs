@@ -112,6 +112,11 @@ namespace SignalRClient
                 }
                 Console.WriteLine("*********************************");
             });
+
+            connection.On<FinishRoomViewModel>("FinishRoom", (model) => 
+            {
+                Console.WriteLine("Room number #" + model.RoomId + " has been finished!");
+            });
         }
 
         public void SendMessageToRoom(MessageModel messageModel)

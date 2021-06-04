@@ -26,6 +26,15 @@ namespace SAM_Backend.Hubs
         }
         public async Task SendMessageToRoom(MessageViewModel messageModel)
         {
+            #region check room end date
+            var room = DbContext.Rooms.Find(messageModel.RoomId);
+            if ((DateTime.Compare(room.EndDate, DateTime.Now) <= 0))
+            {
+                await Clients.Caller.SendAsync("FinishRoom", new FinishRoomViewModel() { RoomId = room.Id });
+                return;           
+            }
+            #endregion
+
             #region Text
             if (messageModel.MessageType == MessageType.Text)
             {
@@ -41,7 +50,7 @@ namespace SAM_Backend.Hubs
                     Sender = await userManager.FindByNameAsync(messageModel.UserModel.Username),
                     ContentType = MessageType.Text,
                     Content = messageModel.Message.ToString(),
-                    Room = DbContext.Rooms.Find(messageModel.RoomId),
+                    Room = room,
                     Parent = messageModel.ParentId != -1 ? DbContext.RoomsMessages.Find(messageModel.ParentId) : null
                 };
                 DbContext.RoomsMessages.Add(message);
@@ -81,6 +90,11 @@ namespace SAM_Backend.Hubs
             {
                 outputModel.Message = "User is not a member of the room!";
                 throw new Exception(outputModel.Message);
+            }
+            else if ((DateTime.Compare(room.EndDate, DateTime.Now) <= 0))
+            {
+                await Clients.Caller.SendAsync("FinishRoom", new FinishRoomViewModel() { RoomId = room.Id });
+                return;
             }
             #endregion
 
