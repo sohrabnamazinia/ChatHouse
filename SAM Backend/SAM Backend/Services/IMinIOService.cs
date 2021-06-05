@@ -11,7 +11,9 @@ namespace SAM_Backend.Services
     public interface IMinIOService
     {
         public Task<MinIOResponseModel> UpdateUserImage(IFormFileCollection fileCollection, AppUser user);
-        public Task<string> GenerateUrl(string id, string fileName);
+        public Task<string> GenerateUrlUserImage(string id, string fileName);
+        public Task<string> GenerateUrlRoomImageMessage(string roomId, string fileName);
         public Task<int> RemoveImage(AppUser user);
+        public Task<MinIOResponseModel> UploadRoomImageMessage(IFormFile file, AppUser user, Room room, int parentId);
     }
 }

@@ -60,7 +60,7 @@ namespace SAM_Backend.Controllers
 
             #region update image links
             foreach (var user in suggestedUsers)
-                user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
+                user.ImageLink = await minIOService.GenerateUrlUserImage(user.Id, user.ImageName);
             #endregion
 
             #region convert to viewModel
@@ -149,7 +149,7 @@ namespace SAM_Backend.Controllers
 
             #region update image links
             foreach (var user in users)
-                user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
+                user.ImageLink = await minIOService.GenerateUrlUserImage(user.Id, user.ImageName);
             #endregion
 
             #region convert to viewModel
@@ -244,7 +244,7 @@ namespace SAM_Backend.Controllers
 
             #region update image links
             foreach (var user in users)
-                user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
+                user.ImageLink = await minIOService.GenerateUrlUserImage(user.Id, user.ImageName);
             #endregion
 
             #region convert to viewModel
@@ -509,7 +509,7 @@ namespace SAM_Backend.Controllers
 
             #region update image links
             foreach (var u in suggestBy.SelectMany(x => x).ToList())
-                user.ImageLink = await minIOService.GenerateUrl(u.Id, u.ImageName);
+                user.ImageLink = await minIOService.GenerateUrlUserImage(u.Id, u.ImageName);
             #endregion
 
             #region convert to viewModel

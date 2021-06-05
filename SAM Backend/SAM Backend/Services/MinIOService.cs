@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Minio;
 using SAM_Backend.Models;
 using SAM_Backend.Utility;
+using SAM_Backend.ViewModels.ChatRoomHubViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,7 +82,7 @@ namespace SAM_Backend.Services
             #region upload
             var ImageName = FileService.CreateObjectName(imageFile.FileName, user.Id);
             await minio.PutObjectAsync(Constants.MinIOBucketUsers, ImageName, imageFile.OpenReadStream(), imageFile.Length);
-            var link = await GenerateUrl(user.Id, ImageName);
+            var link = await GenerateUrlUserImage(user.Id, ImageName);
             if (link == null)
             {
                 response.Message = "image link is created null";
@@ -98,15 +99,27 @@ namespace SAM_Backend.Services
             #endregion return
         }
 
-        public async Task<string> GenerateUrl(string id, string fileName)
+        public async Task<string> GenerateUrlUserImage(string id, string fileName)
         {
             #region check input
             if (id == null || fileName == null) return null;
             #endregion
 
             #region return
-            return await minio.PresignedGetObjectAsync(Constants.MinIOBucketUsers, FileService.CreateObjectName(fileName, id), Constants.PresignedGetObjectExpirationPeriod);
+            return await minio.PresignedGetObjectAsync(Constants.MinIOBucketUsers, FileService.CreateRoomObjectName(fileName), Constants.PresignedGetObjectExpirationPeriod);
             #endregion
+        }
+
+        public async Task<string> GenerateUrlRoomImageMessage(string roomId, string fileName)
+        {
+            #region check input
+            if (roomId == null || fileName == null) return null;
+            #endregion
+
+            #region return
+            return await minio.PresignedGetObjectAsync(roomId, "", Constants.PresignedGetObjectExpirationPeriod);
+            #endregion
+
         }
 
         public async Task<int> RemoveImage(AppUser user)
@@ -117,5 +130,84 @@ namespace SAM_Backend.Services
             context.SaveChanges();
             return 1;
         }
+
+        public async Task<MinIOResponseModel> UploadRoomImageMessage(IFormFile file, AppUser user, Room room, int parentId)
+        {
+            #region check failed cases
+            var response = new MinIOResponseModel();
+            if (user == null)
+            {
+                response.Message = "Room not found";
+                return response;
+            }
+
+            if (file == null)
+            {
+                response.Message = "File not found";
+                return response;
+            }
+
+            if (!(file.Length > 0))
+            {
+                response.Message = "Image Size = 0!";
+                return response;
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                var fileBytes = ms.ToArray();
+                if (!FileService.FileFormatChecker(fileBytes) || !FileService.CheckFileNameExtension(Path.GetExtension(file.FileName)))
+                {
+                    response.Message = "file format is invalid";
+                    return response;
+                }
+            }
+
+            if (file.Length > Constants.MaxUserImageSizeByte)
+            {
+                response.Message = "image size exceeds the limitation\nthe limitation is : " + Constants.MaxUserImageSizeByte + "Bytes";
+                return response;
+            }
+            #endregion
+
+            #region minio & Db
+            var ImageName = FileService.CreateRoomObjectName(file.FileName);
+            if (!await minio.BucketExistsAsync(room.Id.ToString()))
+            {
+                await minio.MakeBucketAsync(room.Id.ToString());
+            }
+            await minio.PutObjectAsync(room.Id.ToString(), ImageName, file.OpenReadStream(), file.Length);
+            var link = await GenerateUrlRoomImageMessage(room.Id.ToString(), ImageName);
+            if (link == null)
+            {
+                response.Message = "image link is created null";
+                return response;
+            }
+
+            #region find message parent
+            RoomMessage Parent = await context.RoomsMessages.FindAsync(parentId);
+            #endregion
+
+            RoomMessage message = new RoomMessage()
+            {
+                // content = imageName if message is image
+                Content = link,
+                ContentType = MessageType.ImageFile,
+                Parent = Parent,
+                Room = room,
+                Sender = user,
+                SentDate = DateTime.Now,
+            };
+            context.RoomsMessages.Add(message);
+            #endregion
+
+            #region return
+            context.SaveChanges();
+            response.Done = true;
+            return response;
+            #endregion
+        }
+
     }
 }
