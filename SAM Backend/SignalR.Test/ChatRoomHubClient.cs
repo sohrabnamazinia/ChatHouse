@@ -115,7 +115,7 @@ namespace SignalRClient
 
             connection.On<FinishRoomViewModel>("FinishRoom", (model) => 
             {
-                Console.WriteLine("Room number #" + model.RoomId + " has been finished!");
+                Console.WriteLine("Sorry, Room number #" + model.RoomId + " has been finished!");
             });
         }
 

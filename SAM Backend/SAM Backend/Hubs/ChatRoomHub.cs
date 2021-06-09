@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using SAM_Backend.Models;
+using SAM_Backend.Services;
 using SAM_Backend.ViewModels.ChatRoomHubViewModel;
 using SAM_Backend.ViewModels.Hubs.ChatRoomHubViewModel;
 using System;
@@ -16,12 +18,14 @@ namespace SAM_Backend.Hubs
         #region Fields
         private readonly AppDbContext DbContext;
         private readonly UserManager<AppUser> userManager;
+        private readonly IMinIOService minIOService;
         #endregion
-        public ChatRoomHub(AppDbContext AppDbContext, UserManager<AppUser> userManager)
+        public ChatRoomHub(AppDbContext AppDbContext, UserManager<AppUser> userManager, IMinIOService minIOService)
         {
             #region DI
             DbContext = AppDbContext;
             this.userManager = userManager;
+            this.minIOService = minIOService;
             #endregion DI
         }
         public async Task SendMessageToRoom(MessageViewModel messageModel)
@@ -38,11 +42,6 @@ namespace SAM_Backend.Hubs
             #region Text
             if (messageModel.MessageType == MessageType.Text)
             {
-                messageModel.IsMe = false;
-                await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
-                messageModel.IsMe = true;
-                await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
-
                 #region Db
                 RoomMessage message = new RoomMessage()
                 {
@@ -56,16 +55,31 @@ namespace SAM_Backend.Hubs
                 DbContext.RoomsMessages.Add(message);
                 DbContext.SaveChanges();
                 #endregion Db
-                return;
             }
             #endregion Text
 
-            #region File
-            else
+            #region Image File
+            else if (messageModel.MessageType == MessageType.ImageFile)
             {
-                throw new Exception("Non text message types not supported yey");
+                #region get data
+                IFormFile image = (IFormFile)messageModel.Message;
+                var user = await userManager.FindByNameAsync(messageModel.UserModel.Username);
+                #endregion
+
+                #region minio
+                var response = await minIOService.UploadRoomImageMessage(image, user, room, messageModel.ParentId);
+                if (!response.Done) throw new Exception(response.Message);
+                #endregion
+
             }
             #endregion File
+
+            #region Send
+            messageModel.IsMe = false;
+            await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
+            messageModel.IsMe = true;
+            await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
+            #endregion
         }
         public async Task JoinRoom(JoinRoomViewModel inputModel)
         {

@@ -22,7 +22,7 @@ namespace SAM_Backend.ViewModels.ChatRoomHubViewModel
     public enum MessageType
     {
         Text,
-        File,
+        ImageFile,
         JoinNotification,
         LeftNotification
     }

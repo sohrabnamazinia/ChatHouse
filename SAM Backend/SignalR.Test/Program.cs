@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR.Client;
 using SAM_Backend.Models;
 using SignalR.Test;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +13,8 @@ namespace SignalRClient
     {
         public static void Main(string[] args)
         {
-            #region Set delay for main project setup
+            #region Set delay for main project setup & room id
+            int RoomId = 4;
             //Thread.Sleep(20000);
             #endregion
 
@@ -40,18 +43,26 @@ namespace SignalRClient
                 MessageType = MessageType.Text,
                 Message = "Hummmmm",
                 UserModel = UserModel1,
-                RoomId = 3
+                RoomId = RoomId
+            };
+
+            MessageModel messageModel11 = new MessageModel()
+            {
+                MessageType = MessageType.ImageFile,
+                Message = new FileInfo("C:\\users\\Sohrab\\Desktop\\CR7.jpg"),
+                UserModel = UserModel1,
+                RoomId = RoomId
             };
 
             JoinRoomViewModel joinRoomViewModel1 = new JoinRoomViewModel()
             {
-                RoomId = 3,
+                RoomId = RoomId,
                 UserModel = UserModel1
             };
 
             LeaveRoomViewModel leaveRoomViewModel1 = new LeaveRoomViewModel()
             {
-                RoomId = 3,
+                RoomId = RoomId,
                 UserModel = UserModel1
             };
 
@@ -68,33 +79,33 @@ namespace SignalRClient
                 MessageType = MessageType.Text,
                 Message = "Hullllll",
                 UserModel = UserModel2,
-                RoomId = 3
+                RoomId = RoomId
             };
 
             JoinRoomViewModel joinRoomViewModel2 = new JoinRoomViewModel()
             {
-                RoomId = 3,
+                RoomId = RoomId,
                 UserModel = UserModel2
             };
 
             LeaveRoomViewModel leaveRoomViewModel2 = new LeaveRoomViewModel()
             {
-                RoomId = 3,
+                RoomId = RoomId,
                 UserModel = UserModel2
             };
             #endregion
 
             #region run tests
-            //client1.JoinRoom(joinRoomViewModel1);
-            //client2.JoinRoom(joinRoomViewModel2);
+            client1.JoinRoom(joinRoomViewModel1);
+            client2.JoinRoom(joinRoomViewModel2);
 
-            //client1.SendMessageToRoom(messageModel1);
+            client1.SendMessageToRoom(messageModel11);
             //client2.SendMessageToRoom(messageModel2);
 
-            //client1.LeaveRoom(leaveRoomViewModel1);
-            //client2.LeaveRoom(leaveRoomViewModel2);
+            client1.LeaveRoom(leaveRoomViewModel1);
+            client2.LeaveRoom(leaveRoomViewModel2);
 
-            client1.LoadRoomAllMessages(3, UserModel1.Username);
+            client1.LoadRoomAllMessages(RoomId, UserModel1.Username);
             #endregion run tests
 
             #region not close

@@ -26,7 +26,7 @@ namespace SignalR.Test
     public enum MessageType
     {
         Text,
-        File,
+        ImageFile,
         JoinNotification,
         LeftNotification
     }

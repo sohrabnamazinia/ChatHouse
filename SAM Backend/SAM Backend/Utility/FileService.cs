@@ -31,6 +31,11 @@ namespace SAM_Backend.Utility
         {
             return id + "." + GetFileNameExtension(fileName);
         }
+        public static string CreateRoomObjectName(string fileName)
+        {
+            string RandomGen = Guid.NewGuid().ToString();
+            return RandomGen+ "." + GetFileNameExtension(fileName);
+        }
         public static string GetFileNameExtension(string fileName)
         {
             var extension = fileName.Split(".");

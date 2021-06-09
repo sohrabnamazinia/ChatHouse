@@ -13,17 +13,9 @@ namespace SignalR.Test
 
         #region define test JWT strings
         // For DEMO
-        public const string token1 = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJ4eH" +
-            "giLCJVc2VySWQiOiJhM2YyMTFiZS1kYTVkLTQ4ZGUtODY3OS0xNWU4MWZhZjg2NjUiLCJFbWFpb" +
-            "CI6Inh4eEBleGFtcGxlLmNvbSIsIm5iZiI6MTYyMDQxNjY5OCwiZXhwIjoxNjUxOTUyNjk4L" +
-            "CJpYXQiOjE2MjA0MTY2OTh9.U9EzbdOGPHxGOEhy0dSm-pVMVZ7Kb0VPfUUFt2s69qnev9zZ2dK" +
-            "NYEY1b6e4cST01TB1_PGo4F_NsQvGdlDI-Q";
+        public const string token1 = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJ4eHgiLCJVc2VySWQiOiJhM2YyMTFiZS1kYTVkLTQ4ZGUtODY3OS0xNWU4MWZhZjg2NjUiLCJFbWFpbCI6Inh4eEBleGFtcGxlLmNvbSIsIm5iZiI6MTYyMjg4NDQ5OCwiZXhwIjoxNjU0NDIwNDk4LCJpYXQiOjE2MjI4ODQ0OTh9.zlIIQheE4S24D_dub57L2BkbnDBEm8Mc23gt7hTvOGkKR1Kei1DYr7GPzjZYsZJOsHOKn0KxP3LrO7qtIVTPtg";
 
-        public const string token2 = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9" +
-            ".eyJuYW1laWQiOiJzc3MiLCJVc2VySWQiOiI0NmI4OTFjMS0w" +
-            "YmQ4LTRhNTEtOTk1ZS1kN2FkODRmZjNjZWUiLCJFbWFpbCI6InNzc0BleGFtcGxl" +
-            "LmNvbSIsIm5iZiI6MTYyMDQxNjY1OCwiZXhwIjoxNjUxOTUyNjU4LCJpYXQiOjE2MjA0MTY" +
-            "2NTh9.GMlCU52iNoXs9PnbPNj9XKT6T8P2z21FVXhLDN62Gy_657ze3Dl3msyn627nQjdtXY2kmrAotcw423O7iUiUOA";
+        public const string token2 = "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJzc3MiLCJVc2VySWQiOiI0NmI4OTFjMS0wYmQ4LTRhNTEtOTk1ZS1kN2FkODRmZjNjZWUiLCJFbWFpbCI6InNzc0BleGFtcGxlLmNvbSIsIm5iZiI6MTYyMjg4NDg2MCwiZXhwIjoxNjU0NDIwODYwLCJpYXQiOjE2MjI4ODQ4NjB9.aY9LuTlt9ztVo6V9TloQDrpwXbntg5ftqxr6j1rrlB9qnNJu4-PWu6c8YL0rmJO6I7nAmFhtw1HqpqjW2C04aw";
         #endregion
     }
 }
