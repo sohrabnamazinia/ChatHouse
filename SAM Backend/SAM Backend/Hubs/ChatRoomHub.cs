@@ -176,6 +176,13 @@ namespace SAM_Backend.Hubs
             {
                 roomMessages = DbContext.RoomsMessages.Where(x => x.Room.Id == RoomId).Select(x => x).ToList();
                 messages = roomMessages.Select(x => new LoadMessageViewModel(x)).ToList();
+                foreach (var message in messages)
+                {
+                    if (message.ContetntType == MessageType.ImageFile)
+                    {
+                        message.LinkIfImage = await minIOService.GenerateUrlRoomImageMessage(RoomId.ToString(), message.Content);
+                    }
+                }
             }
             catch (Exception e)
             {

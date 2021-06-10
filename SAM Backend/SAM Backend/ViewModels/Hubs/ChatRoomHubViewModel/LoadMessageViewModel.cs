@@ -14,6 +14,7 @@ namespace SAM_Backend.ViewModels.Hubs.ChatRoomHubViewModel
             Id = message.Id;
             ParentId = message.Parent != null ? message.Parent.Id : -1;
             Content = message.Content;
+            LinkIfImage = message.LinkIfImage;
             ContetntType = message.ContentType;
             SentDate = message.SentDate;
             RoomId = message.Room.Id;
@@ -33,5 +34,6 @@ namespace SAM_Backend.ViewModels.Hubs.ChatRoomHubViewModel
         public ChatRoomHubUserViewModel Sender { get; set; }
         public bool IsMe { get; set; }
         public int RoomId { get; set; }
+        public string LinkIfImage { get; set; }
     }
 }

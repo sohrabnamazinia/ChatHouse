@@ -19,5 +19,6 @@ namespace SAM_Backend.Models
         public string Content { get; set; }
         public virtual RoomMessage Parent { get; set; }
         public virtual DateTime SentDate { get; set; }
+        public string LinkIfImage { get; set; }
     }
 }

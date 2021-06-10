@@ -106,7 +106,7 @@ namespace SAM_Backend.Services
             #endregion
 
             #region return
-            return await minio.PresignedGetObjectAsync(Constants.MinIOBucketUsers, FileService.CreateRoomObjectName(fileName), Constants.PresignedGetObjectExpirationPeriod);
+            return await minio.PresignedGetObjectAsync(Constants.MinIOBucketUsers, FileService.CreateObjectName(fileName, id), Constants.PresignedGetObjectExpirationPeriod);
             #endregion
         }
 
@@ -117,9 +117,8 @@ namespace SAM_Backend.Services
             #endregion
 
             #region return
-            return await minio.PresignedGetObjectAsync(roomId, "", Constants.PresignedGetObjectExpirationPeriod);
+            return await minio.PresignedGetObjectAsync(roomId, FileService.CreateRoomObjectName(fileName), Constants.PresignedGetObjectExpirationPeriod);
             #endregion
-
         }
 
         public async Task<int> RemoveImage(AppUser user)
@@ -192,7 +191,8 @@ namespace SAM_Backend.Services
             RoomMessage message = new RoomMessage()
             {
                 // content = imageName if message is image
-                Content = link,
+                Content = ImageName,
+                LinkIfImage = link,
                 ContentType = MessageType.ImageFile,
                 Parent = Parent,
                 Room = room,
