@@ -14,9 +14,11 @@ namespace SAM_Backend.Services
 {
     public class MinIOService : IMinIOService
     {
+        #region Fields
         private MinioClient minio;
         private readonly IConfiguration _config;
         private readonly AppDbContext context;
+        #endregion
 
         public MinIOService(IConfiguration configuration, AppDbContext context)
         {
@@ -117,7 +119,7 @@ namespace SAM_Backend.Services
             #endregion
 
             #region return
-            return await minio.PresignedGetObjectAsync(roomId, FileService.CreateRoomObjectName(fileName), Constants.PresignedGetObjectExpirationPeriod);
+            return await minio.PresignedGetObjectAsync(roomId, fileName, Constants.PresignedGetObjectExpirationPeriod);
             #endregion
         }
 
@@ -130,10 +132,24 @@ namespace SAM_Backend.Services
             return 1;
         }
 
-        public async Task<MinIOResponseModel> UploadRoomImageMessage(IFormFile file, AppUser user, Room room, int parentId)
+        public async Task<MinIOResponseModel> UploadRoomImageMessage(IFormFileCollection fileCollection, AppUser user, Room room, int parentId)
         {
             #region check failed cases
             var response = new MinIOResponseModel();
+            if (fileCollection == null)
+            {
+                response.Message = "file not found!";
+                return response;
+            }
+
+            if (fileCollection.Count != 1)
+            {
+                response.Message = "there must be exactly one input file!";
+                return response;
+            }
+
+            var file = fileCollection[0];
+
             if (user == null)
             {
                 response.Message = "Room not found";
@@ -171,13 +187,13 @@ namespace SAM_Backend.Services
             #endregion
 
             #region minio & Db
-            var ImageName = FileService.CreateRoomObjectName(file.FileName);
-            if (!await minio.BucketExistsAsync(room.Id.ToString()))
+            var ImageName = FileService.CreateRoomFileMessageName(file.FileName);
+            if (!await minio.BucketExistsAsync(GetRoomBucketName(room.Id)))
             {
-                await minio.MakeBucketAsync(room.Id.ToString());
+                await minio.MakeBucketAsync(GetRoomBucketName(room.Id));
             }
-            await minio.PutObjectAsync(room.Id.ToString(), ImageName, file.OpenReadStream(), file.Length);
-            var link = await GenerateUrlRoomImageMessage(room.Id.ToString(), ImageName);
+            await minio.PutObjectAsync(GetRoomBucketName(room.Id), ImageName, file.OpenReadStream(), file.Length);
+            var link = await GenerateUrlRoomImageMessage(GetRoomBucketName(room.Id), ImageName);
             if (link == null)
             {
                 response.Message = "image link is created null";
@@ -199,6 +215,7 @@ namespace SAM_Backend.Services
                 Sender = user,
                 SentDate = DateTime.Now,
             };
+            response.roomImageMessage = message;
             context.RoomsMessages.Add(message);
             #endregion
 
@@ -209,5 +226,9 @@ namespace SAM_Backend.Services
             #endregion
         }
 
+        public string GetRoomBucketName(int id)
+        {
+            return "room-" + id.ToString();
+        }
     }
 }

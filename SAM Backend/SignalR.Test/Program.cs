@@ -46,14 +46,6 @@ namespace SignalRClient
                 RoomId = RoomId
             };
 
-            MessageModel messageModel11 = new MessageModel()
-            {
-                MessageType = MessageType.ImageFile,
-                Message = new FileInfo("C:\\users\\Sohrab\\Desktop\\CR7.jpg"),
-                UserModel = UserModel1,
-                RoomId = RoomId
-            };
-
             JoinRoomViewModel joinRoomViewModel1 = new JoinRoomViewModel()
             {
                 RoomId = RoomId,
@@ -99,11 +91,11 @@ namespace SignalRClient
             client1.JoinRoom(joinRoomViewModel1);
             client2.JoinRoom(joinRoomViewModel2);
 
-            client1.SendMessageToRoom(messageModel11);
+            //client1.SendMessageToRoom(messageModel1);
             //client2.SendMessageToRoom(messageModel2);
 
-            client1.LeaveRoom(leaveRoomViewModel1);
-            client2.LeaveRoom(leaveRoomViewModel2);
+            //client1.LeaveRoom(leaveRoomViewModel1);
+            //client2.LeaveRoom(leaveRoomViewModel2);
 
             client1.LoadRoomAllMessages(RoomId, UserModel1.Username);
             #endregion run tests
