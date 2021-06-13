@@ -42,6 +42,12 @@ namespace SAM_Backend.Hubs
             #region Text
             if (messageModel.MessageType == MessageType.Text)
             {
+                #region Send
+                messageModel.IsMe = false;
+                await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
+                messageModel.IsMe = true;
+                await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
+                #endregion
                 #region Db
                 RoomMessage message = new RoomMessage()
                 {
@@ -58,28 +64,27 @@ namespace SAM_Backend.Hubs
             }
             #endregion Text
 
-            #region Image File
-            else if (messageModel.MessageType == MessageType.ImageFile)
+            #region Other media types
+            else
             {
-                #region get data
-                IFormFile image = (IFormFile)messageModel.Message;
-                var user = await userManager.FindByNameAsync(messageModel.UserModel.Username);
-                #endregion
-
-                #region minio
-                var response = await minIOService.UploadRoomImageMessage(image, user, room, messageModel.ParentId);
-                if (!response.Done) throw new Exception(response.Message);
-                #endregion
-
+                throw new Exception("For sending non-text media types, use web api");
             }
-            #endregion File
-
+            #endregion Image
+        }
+        public async Task FinishRoom(FinishRoomViewModel model)
+        {
+            await Clients.Caller.SendAsync("FinishRoom", model);
+            return;
+        }
+        public async Task SendMessageToRoom2(MessageViewModel messageModel)
+        {
             #region Send
             messageModel.IsMe = false;
             await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
             messageModel.IsMe = true;
             await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
             #endregion
+
         }
         public async Task JoinRoom(JoinRoomViewModel inputModel)
         {
@@ -119,7 +124,8 @@ namespace SAM_Backend.Hubs
             {
                 Notification = RoomNotification.Join,
                 UserModel = inputModel.UserModel,
-                RoomId = inputModel.RoomId
+                RoomId = inputModel.RoomId,
+                ConnectionId = Context.ConnectionId
             };
             notificationViewModel.IsMe = false;
             await Clients.OthersInGroup(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
@@ -137,6 +143,10 @@ namespace SAM_Backend.Hubs
             #endregion Db
             #endregion
         }
+        public string GetConnectionId()
+        {
+            return Context.ConnectionId;
+        }
         public async Task LeaveRoom(LeaveRoomViewModel inputModel)
         {
             #region create model
@@ -144,7 +154,8 @@ namespace SAM_Backend.Hubs
             {
                 Notification = RoomNotification.Left,
                 UserModel = inputModel.UserModel,
-                RoomId = inputModel.RoomId
+                RoomId = inputModel.RoomId,
+                ConnectionId = Context.ConnectionId
             };
             #endregion
             
