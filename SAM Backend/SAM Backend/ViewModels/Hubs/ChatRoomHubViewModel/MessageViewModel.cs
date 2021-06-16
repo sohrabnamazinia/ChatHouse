@@ -12,17 +12,17 @@ namespace SAM_Backend.ViewModels.ChatRoomHubViewModel
         public ChatRoomHubUserViewModel UserModel { get; set; }
         [Required]
         public MessageType MessageType { get; set; }
-        [Required]
-        public Object Message { get; set; }
+        public string Message { get; set; }
         public int RoomId{ get; set; }
         public bool IsMe { get; set; }
         public int ParentId { get; set; }
+        public string ConnectionId { get; set; }
     }
 
     public enum MessageType
     {
         Text,
-        File,
+        ImageFile,
         JoinNotification,
         LeftNotification
     }

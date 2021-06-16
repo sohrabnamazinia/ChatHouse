@@ -177,7 +177,7 @@ namespace SAM_Backend.Controllers
             var model = new GetProfileViewModel(user);
             AppUser requester = await jWTService.FindUserByTokenAsync(Request, context);
             model.IsMe = (requester == user) ? true : false;
-            user.ImageLink = await minIOService.GenerateUrl(user.Id, user.ImageName);
+            user.ImageLink = await minIOService.GenerateUrlUserImage(user.Id, user.ImageName);
             model.ImageLink = user.ImageLink;
             #endregion Set IsMe
 
@@ -295,6 +295,26 @@ namespace SAM_Backend.Controllers
             return Ok(new UpdateImageViewModel(user));
             #endregion return
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<ActionResult> RemoveImage()
+        {
+            #region find user
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            #endregion find user
+
+            #region minio
+            if (user.ImageLink == null) return NotFound("User does not have image");
+            else await minIOService.RemoveImage(user);
+            #endregion minio
+
+            #region return
+            context.SaveChanges();
+            return Ok(new AppUserViewModel(user));
+            #endregion return
+        }
+
 
         #region TODO After Deploy
 

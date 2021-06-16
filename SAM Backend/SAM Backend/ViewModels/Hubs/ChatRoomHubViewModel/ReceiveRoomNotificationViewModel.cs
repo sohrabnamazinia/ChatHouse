@@ -11,6 +11,7 @@ namespace SAM_Backend.ViewModels.ChatRoomHubViewModel
         public ChatRoomHubUserViewModel UserModel { get; set; }
         public int RoomId { get; set; }
         public bool IsMe { get; set; }
+        public string ConnectionId { get; set; }
     }
 
     public enum RoomNotification

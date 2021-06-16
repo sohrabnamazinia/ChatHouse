@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using SAM_Backend.Hubs;
 using SAM_Backend.Models;
 using SAM_Backend.Services;
 using SAM_Backend.Utility;
 using SAM_Backend.ViewModels.Account;
 using SAM_Backend.ViewModels.ChatRoomHubViewModel;
+using SAM_Backend.ViewModels.Hubs.ChatRoomHubViewModel;
 using SAM_Backend.ViewModels.Room;
 using System;
 using System.Collections.Generic;
@@ -26,14 +29,16 @@ namespace SAM_Backend.Controllers
         private readonly AppDbContext context;
         private readonly IMinIOService minIOService;
         private readonly UserManager<AppUser> userManager;
+        private readonly IHubContext<ChatRoomHub> chatHubContext;
 
-        public RoomController(ILogger<AccountController> logger, IJWTService jWTService, AppDbContext context, IMinIOService minIOService, UserManager<AppUser> userManager)
+        public RoomController(ILogger<AccountController> logger, IJWTService jWTService, AppDbContext context, IMinIOService minIOService, UserManager<AppUser> userManager, IHubContext<ChatRoomHub> chatHubContext)
         {
             this.logger = logger;
             this.jWTService = jWTService;
             this.context = context;
             this.minIOService = minIOService;
             this.userManager = userManager;
+            this.chatHubContext = chatHubContext;
         }
 
         [HttpPost]
@@ -247,6 +252,109 @@ namespace SAM_Backend.Controllers
             return Ok("Room is deleted!");
             #endregion
         }
+
+        #region Message
+        [HttpPost]
+        [FileUploadOperation.FileContentType]
+        public async Task<IActionResult> SendMessage(IFormFile formFile, [FromQuery] MessageViewModel messageModel)
+        {
+            #region get user
+            var user = await jWTService.FindUserByTokenAsync(Request, context);
+            #endregion
+
+            #region check failed cases
+            var room = context.Rooms.Find(messageModel.RoomId);
+            if (room == null) return NotFound("Room not Found");
+            if ((!room.Members.Contains(user)) && room.Creator != user)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "User is not a member/owner of the room!");
+            }
+            if ((DateTime.Compare(room.EndDate, DateTime.Now) <= 0))
+            {
+                messageModel.IsMe = true;
+                await chatHubContext.Clients.Client(messageModel.ConnectionId).SendAsync("FinishRoom", new FinishRoomViewModel() { RoomId = room.Id });
+                return BadRequest("Room has been finished, notification is just sent to the caller");
+            }
+            if (messageModel.MessageType == MessageType.Text && messageModel.Message == null)
+            {
+                return BadRequest("Message field must be not null in text message");
+            }
+            if (messageModel.MessageType == MessageType.ImageFile)
+            {
+                try
+                {
+                    var a = Request.Form.Files;
+                }
+                catch (InvalidOperationException)
+                {
+                    return BadRequest("form data must be not null in image type messaging requests");
+                }
+            }
+            #endregion
+
+            #region text
+            if (messageModel.MessageType == MessageType.Text)
+            {
+                #region Send
+                messageModel.IsMe = false;
+                chatHubContext.Clients.GroupExcept(room.Id.ToString(), messageModel.ConnectionId).SendAsync("ReceiveRoomMessage", messageModel).Wait();
+                messageModel.IsMe = true;
+                chatHubContext.Clients.Client(messageModel.ConnectionId).SendAsync("ReceiveRoomMessage", messageModel).Wait();
+                #endregion
+                #region Db
+                RoomMessage message = new RoomMessage()
+                {
+                    SentDate = DateTime.Now,
+                    Sender = await userManager.FindByNameAsync(user.UserName),
+                    ContentType = MessageType.Text,
+                    Content = messageModel.Message.ToString(),
+                    Room = room,
+                    Parent = messageModel.ParentId != -1 ? context.RoomsMessages.Find(messageModel.ParentId) : null
+                };
+                context.RoomsMessages.Add(message);
+                context.SaveChanges();
+                #endregion Db
+            }
+            #endregion text
+
+            #region Image
+            else if (messageModel.MessageType == MessageType.ImageFile)
+            {
+                #region get data
+                var fileCollection = Request.Form.Files;
+                #endregion
+
+                #region minio
+                var response = await minIOService.UploadRoomImageMessage(fileCollection, user, room, messageModel.ParentId);
+                if (!response.Done) return BadRequest(response.Message);
+                #endregion
+
+                #region Send
+                messageModel.Message = response.roomImageMessage.LinkIfImage;
+                messageModel.IsMe = false;
+                chatHubContext.Clients.GroupExcept(room.Id.ToString(), messageModel.ConnectionId).SendAsync("ReceiveRoomMessage", messageModel).Wait();
+                messageModel.IsMe = true;
+                chatHubContext.Clients.Client(messageModel.ConnectionId).SendAsync("ReceiveRoomMessage", messageModel).Wait();
+                #endregion
+
+                #region return
+                return Ok();
+                #endregion
+            }
+            #endregion Image
+
+            #region other media types
+            else
+            {
+                return StatusCode(415, "Other data types transmission is not supported yet!");
+            }
+            #endregion other media types
+
+            #region return
+            return Ok();
+            #endregion
+        }
+        #endregion
 
     }
 }

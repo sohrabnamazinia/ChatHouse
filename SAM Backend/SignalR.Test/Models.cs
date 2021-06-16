@@ -10,9 +10,10 @@ namespace SignalR.Test
     {
         public ChatRoomHubUserViewModel UserModel { get; set; }
         public MessageType MessageType { get; set; }
-        public Object Message { get; set; }
+        public string Message { get; set; }
         public int RoomId { get; set; }
         public bool IsMe { get; set; }
+        public string ConnectionId { get; set; }
     }
 
     public class ChatRoomHubUserViewModel
@@ -26,7 +27,7 @@ namespace SignalR.Test
     public enum MessageType
     {
         Text,
-        File,
+        ImageFile,
         JoinNotification,
         LeftNotification
     }
@@ -49,6 +50,7 @@ namespace SignalR.Test
         public ChatRoomHubUserViewModel UserModel { get; set; }
         public int RoomId { get; set; }
         public bool IsMe { get; set; }
+        public string ConnectionId { get; set; }
 
     }
 
@@ -63,10 +65,16 @@ namespace SignalR.Test
         public int Id { get; set; }
         public int ParentId { get; set; }
         public string Content { get; set; }
+        public string LinkIfImage { get; set; }
         public MessageType ContetntType { get; set; }
         public DateTime SentDate { get; set; }
         public ChatRoomHubUserViewModel Sender { get; set; }
         public bool IsMe { get; set; }
+        public int RoomId { get; set; }
+    }
+
+    public class FinishRoomViewModel
+    {
         public int RoomId { get; set; }
     }
 }

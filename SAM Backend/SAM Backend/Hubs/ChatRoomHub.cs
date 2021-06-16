@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using SAM_Backend.Models;
+using SAM_Backend.Services;
 using SAM_Backend.ViewModels.ChatRoomHubViewModel;
 using SAM_Backend.ViewModels.Hubs.ChatRoomHubViewModel;
 using System;
@@ -16,24 +18,36 @@ namespace SAM_Backend.Hubs
         #region Fields
         private readonly AppDbContext DbContext;
         private readonly UserManager<AppUser> userManager;
+        private readonly IMinIOService minIOService;
         #endregion
-        public ChatRoomHub(AppDbContext AppDbContext, UserManager<AppUser> userManager)
+        public ChatRoomHub(AppDbContext AppDbContext, UserManager<AppUser> userManager, IMinIOService minIOService)
         {
             #region DI
             DbContext = AppDbContext;
             this.userManager = userManager;
+            this.minIOService = minIOService;
             #endregion DI
         }
         public async Task SendMessageToRoom(MessageViewModel messageModel)
         {
+            #region check room end date
+            var room = DbContext.Rooms.Find(messageModel.RoomId);
+            if ((DateTime.Compare(room.EndDate, DateTime.Now) <= 0))
+            {
+                await Clients.Caller.SendAsync("FinishRoom", new FinishRoomViewModel() { RoomId = room.Id });
+                return;           
+            }
+            #endregion
+
             #region Text
             if (messageModel.MessageType == MessageType.Text)
             {
+                #region Send
                 messageModel.IsMe = false;
                 await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
                 messageModel.IsMe = true;
                 await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
-
+                #endregion
                 #region Db
                 RoomMessage message = new RoomMessage()
                 {
@@ -41,22 +55,36 @@ namespace SAM_Backend.Hubs
                     Sender = await userManager.FindByNameAsync(messageModel.UserModel.Username),
                     ContentType = MessageType.Text,
                     Content = messageModel.Message.ToString(),
-                    Room = DbContext.Rooms.Find(messageModel.RoomId),
+                    Room = room,
                     Parent = messageModel.ParentId != -1 ? DbContext.RoomsMessages.Find(messageModel.ParentId) : null
                 };
                 DbContext.RoomsMessages.Add(message);
                 DbContext.SaveChanges();
                 #endregion Db
-                return;
             }
             #endregion Text
 
-            #region File
+            #region Other media types
             else
             {
-                throw new Exception("Non text message types not supported yey");
+                throw new Exception("For sending non-text media types, use web api");
             }
-            #endregion File
+            #endregion Image
+        }
+        public async Task FinishRoom(FinishRoomViewModel model)
+        {
+            await Clients.Caller.SendAsync("FinishRoom", model);
+            return;
+        }
+        public async Task SendMessageToRoom2(MessageViewModel messageModel)
+        {
+            #region Send
+            messageModel.IsMe = false;
+            await Clients.OthersInGroup(messageModel.RoomId.ToString()).SendAsync("ReceiveRoomMessage", messageModel);
+            messageModel.IsMe = true;
+            await Clients.Caller.SendAsync("ReceiveRoomMessage", messageModel);
+            #endregion
+
         }
         public async Task JoinRoom(JoinRoomViewModel inputModel)
         {
@@ -82,6 +110,11 @@ namespace SAM_Backend.Hubs
                 outputModel.Message = "User is not a member of the room!";
                 throw new Exception(outputModel.Message);
             }
+            else if ((DateTime.Compare(room.EndDate, DateTime.Now) <= 0))
+            {
+                await Clients.Caller.SendAsync("FinishRoom", new FinishRoomViewModel() { RoomId = room.Id });
+                return;
+            }
             #endregion
 
             #region attempt
@@ -91,7 +124,8 @@ namespace SAM_Backend.Hubs
             {
                 Notification = RoomNotification.Join,
                 UserModel = inputModel.UserModel,
-                RoomId = inputModel.RoomId
+                RoomId = inputModel.RoomId,
+                ConnectionId = Context.ConnectionId
             };
             notificationViewModel.IsMe = false;
             await Clients.OthersInGroup(inputModel.RoomId.ToString()).SendAsync("ReceiveRoomNotification", notificationViewModel);
@@ -109,6 +143,10 @@ namespace SAM_Backend.Hubs
             #endregion Db
             #endregion
         }
+        public string GetConnectionId()
+        {
+            return Context.ConnectionId;
+        }
         public async Task LeaveRoom(LeaveRoomViewModel inputModel)
         {
             #region create model
@@ -116,7 +154,8 @@ namespace SAM_Backend.Hubs
             {
                 Notification = RoomNotification.Left,
                 UserModel = inputModel.UserModel,
-                RoomId = inputModel.RoomId
+                RoomId = inputModel.RoomId,
+                ConnectionId = Context.ConnectionId
             };
             #endregion
             
@@ -148,6 +187,13 @@ namespace SAM_Backend.Hubs
             {
                 roomMessages = DbContext.RoomsMessages.Where(x => x.Room.Id == RoomId).Select(x => x).ToList();
                 messages = roomMessages.Select(x => new LoadMessageViewModel(x)).ToList();
+                foreach (var message in messages)
+                {
+                    if (message.ContetntType == MessageType.ImageFile)
+                    {
+                        message.LinkIfImage = await minIOService.GenerateUrlRoomImageMessage(RoomId.ToString(), message.Content);
+                    }
+                }
             }
             catch (Exception e)
             {

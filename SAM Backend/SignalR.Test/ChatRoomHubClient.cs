@@ -43,23 +43,54 @@ namespace SignalRClient
         {
             connection.On<MessageModel>("ReceiveRoomMessage", (messageModel) =>
             {
-                int RoomId = messageModel.RoomId;
+                #region get data
                 int messageType = (int)messageModel.MessageType;
+                int RoomId = messageModel.RoomId;
                 string message = messageModel.Message.ToString();
                 string senderFirstName = messageModel.UserModel.FirstName;
                 string senderLastName = messageModel.UserModel.LastName;
                 string senderUsername = messageModel.UserModel.Username;
                 string senderImageLink = messageModel.UserModel.ImageLink;
                 bool IsMe = messageModel.IsMe;
-                if (IsMe)
+                #endregion
+
+                #region text
+                if (messageModel.MessageType == MessageType.Text)
                 {
-                    Console.WriteLine("Your Message To  Room number #" + RoomId + ":");
+                    
+                    if (IsMe)
+                    {
+                        Console.WriteLine("Your Message To  Room number #" + RoomId + ":");
+                    }
+                    else
+                    {
+                        Console.WriteLine("New Message From " + senderFirstName + " " + senderLastName + " To  Room number #" + RoomId + ":");
+                    }
+                    Console.WriteLine("\t" + message);
                 }
+                #endregion text
+
+                #region Image
+                else if (messageModel.MessageType == MessageType.ImageFile)
+                {
+                    if (IsMe)
+                    {
+                        Console.WriteLine("Your Image Message Link To  Room number #" + RoomId + ":");
+                    }
+                    else
+                    {
+                        Console.WriteLine("New Image Message Link From " + senderFirstName + " " + senderLastName + " To  Room number #" + RoomId + ":");
+                    }
+                    Console.WriteLine("\t" + message);
+                }
+                #endregion Image
+
+                #region other media type
                 else
                 {
-                    Console.WriteLine("New Message From " + senderFirstName + " " + senderLastName + " To  Room number #" + RoomId + ":");
+                    Console.WriteLine("Other media types still not supported");
                 }
-                Console.WriteLine("\t" + message);
+                #endregion
 
             });
 
@@ -69,22 +100,22 @@ namespace SignalRClient
                 {
                     if (ReceiveRoomNotification.IsMe)
                     {
-                        Console.WriteLine("You joined room number " + ReceiveRoomNotification.RoomId);
+                        Console.WriteLine("You joined room number " + ReceiveRoomNotification.RoomId + " (Connection id = " + ReceiveRoomNotification.ConnectionId + " )");
                     }
                     else
                     {
-                        Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Joined room number " + ReceiveRoomNotification.RoomId);
+                        Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Joined room number " + ReceiveRoomNotification.RoomId + " ( connnection id = " + ReceiveRoomNotification.ConnectionId + " )");
                     }
                 }
                 else
                 {
                     if (ReceiveRoomNotification.IsMe)
                     {
-                        Console.WriteLine("You left room number " + ReceiveRoomNotification.RoomId);
+                        Console.WriteLine("You left room number " + ReceiveRoomNotification.RoomId + " ( connection id =  " + ReceiveRoomNotification.ConnectionId + " )");
                     }
                     else
                     {
-                        Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Left room number " + ReceiveRoomNotification.RoomId);
+                        Console.WriteLine(ReceiveRoomNotification.UserModel.Username + " Left room number " + ReceiveRoomNotification.RoomId + " ( connection id = " + ReceiveRoomNotification.ConnectionId + " )");
                     }
                 }
             });
@@ -101,6 +132,10 @@ namespace SignalRClient
                     {
                         Console.WriteLine(sender + " : " + x.Content + "\t" + x.SentDate.ToString());
                     }
+                    else if (x.ContetntType == MessageType.ImageFile)
+                    {
+                        Console.WriteLine(sender + " : " + x.LinkIfImage + " [Image link] " + "\t" + x.SentDate.ToString());
+                    }
                     else if (x.ContetntType == MessageType.JoinNotification)
                     {
                         Console.WriteLine(sender + " Joined room number " + x.RoomId);
@@ -111,6 +146,11 @@ namespace SignalRClient
                     }
                 }
                 Console.WriteLine("*********************************");
+            });
+
+            connection.On<FinishRoomViewModel>("FinishRoom", (model) => 
+            {
+                Console.WriteLine("Sorry, Room number #" + model.RoomId + " has been finished!");
             });
         }
 
