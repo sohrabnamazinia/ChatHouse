@@ -65,11 +65,11 @@ namespace SAM_Backend.Services
                 }
             }
 
-            if (imageFile.Length > Constants.MaxUserImageSizeByte)
-            {
-                response.Message = "image size exceeds the limitation\nthe limitation is : " + Constants.MaxUserImageSizeByte + "Bytes";
-                return response;
-            }
+            //if (imageFile.Length > Constants.MaxUserImageSizeByte)
+            //{
+            //    response.Message = "image size exceeds the limitation\nthe limitation is : " + Constants.MaxUserImageSizeByte + "Bytes";
+            //    return response;
+            //}
 
             #endregion check errors
 
@@ -179,11 +179,11 @@ namespace SAM_Backend.Services
                 }
             }
 
-            if (file.Length > Constants.MaxUserImageSizeByte)
-            {
-                response.Message = "image size exceeds the limitation\nthe limitation is : " + Constants.MaxUserImageSizeByte + "Bytes";
-                return response;
-            }
+            //if (file.Length > Constants.MaxUserImageSizeByte)
+            //{
+            //    response.Message = "image size exceeds the limitation\nthe limitation is : " + Constants.MaxUserImageSizeByte + "Bytes";
+            //    return response;
+            //}
             #endregion
 
             #region minio & Db
