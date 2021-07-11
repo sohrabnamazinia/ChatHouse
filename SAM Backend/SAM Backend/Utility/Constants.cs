@@ -23,7 +23,7 @@ namespace SAM_Backend.Utility
         public const string MinIOHostAddress = "45.82.139.208:9000";
         public const string ChatRoomHubRoute = "/Hubs/ChatRoom";
         public static readonly string SMTPGoogleDomain = "smtp.gmail.com";
-        public static readonly string ProjectEmail = "Chathouse.SAM@gmail.com";
+        public static readonly string ProjectEmail = "GoNuts.ChatHouse@gmail.com";
         public static readonly string ConfirmAccountRegisterationViewPath = Path.DirectorySeparatorChar.ToString() + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplate" + Path.DirectorySeparatorChar.ToString() + "EmailConfirmation.html";
         public static readonly string ProjectSender = "ChatHouse Team";
         public static readonly string ProjectReciever = "User";
