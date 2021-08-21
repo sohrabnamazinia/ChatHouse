@@ -51,5 +51,5 @@ If you had any problem with running the project, any idea about making it better
 ## Authors
   
 [@Sohrab-Namazi](https://github.com/Sohrab-Namazi)
-[@ali-f-alfa](https://github.com/Sohrab-Namazi)
-[@meliiwamd](https://github.com/Sohrab-Namazi)
+[@ali-f-alfa](https://github.com/ali-f-alfa)
+[@meliiwamd](https://github.com/meliiwamd)
