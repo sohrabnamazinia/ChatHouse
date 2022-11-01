@@ -50,8 +50,9 @@ If you had any problem with running the project, any idea about making it better
 
 ## Authors
   
-[@Sohrab-Namazi](https://github.com/Sohrab-Namazi)
+[@Sohrab77](https://github.com/Sohrab77)
 [@ali-f-alfa](https://github.com/ali-f-alfa)
 [@meliiwamd](https://github.com/meliiwamd)
 
 ![1](https://user-images.githubusercontent.com/46357028/199154460-618f8ccf-3d1f-4263-aca4-3310a56179c6.jpg)
+![2](https://user-images.githubusercontent.com/46357028/199154609-d709c0f0-65d0-4f31-837f-a8bde5b7d264.jpg)
