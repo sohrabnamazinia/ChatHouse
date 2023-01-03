@@ -50,7 +50,7 @@ If you had any problem with running the project, any idea about making it better
 
 ## Authors
   
-[@Sohrab777](https://github.com/Sohrab777)
+[@SohrabNamaziNia](https://github.com/SohrabNamaziNia)
 [@ali-f-alfa](https://github.com/ali-f-alfa)
 [@meliiwamd](https://github.com/meliiwamd)
 
